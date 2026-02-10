@@ -71,6 +71,10 @@ const SettingsMenu = ({ onClose }) => {
     updateSetting("showHiddenGames", !settings.showHiddenGames);
   }, [settings, updateSetting]);
 
+  const toggleShowRunnerIcon = useCallback(() => {
+    updateSetting("showRunnerIcon", !settings.showRunnerIcon);
+  }, [settings, updateSetting]);
+
   const toggleDoubleConfirmPowerManagement = useCallback(() => {
     updateSetting(
       "doubleConfirmPowerManagement",
@@ -80,6 +84,10 @@ const SettingsMenu = ({ onClose }) => {
 
   const toggleUseRemoteDesktopPortal = useCallback(() => {
     updateSetting("useRemoteDesktopPortal", !settings.useRemoteDesktopPortal);
+  }, [settings, updateSetting]);
+
+  const toggleKeepGamesRunningOnQuit = useCallback(() => {
+    updateSetting("keepGamesRunningOnQuit", !settings.keepGamesRunningOnQuit);
   }, [settings, updateSetting]);
 
   const menuItems = useMemo(() => {
@@ -108,16 +116,28 @@ const SettingsMenu = ({ onClose }) => {
         label: t("Show Hidden Games"),
       });
     }
+    if (settings.showRunnerIcon !== undefined) {
+      result.push({
+        type: "SHOW_RUNNER_ICON",
+        label: t("Show Runner Icon"),
+      });
+    }
     if (settings.doubleConfirmPowerManagement !== undefined) {
       result.push({
         type: "DOUBLE_CONFIRM_POWER_MANAGEMENT",
-        label: t("Double confirm power management"),
+        label: t("Double Confirm Power Management"),
       });
     }
+    result.push({
+      type: "USE_REMOTE_DESKTOP_PORTAL",
+      label: t("Use Remote Desktop Portal"),
+    });
+    if (settings.keepGamesRunningOnQuit !== undefined) {
       result.push({
-        type: "USE_REMOTE_DESKTOP_PORTAL",
-        label: t("Use Remote Desktop Portal"),
+        type: "KEEP_GAMES_RUNNING",
+        label: t("Keep Games Running On Quit"),
       });
+    }
     return result;
   }, [t, settings]);
 
@@ -131,6 +151,9 @@ const SettingsMenu = ({ onClose }) => {
       }
 
       switch (item.type) {
+        case "KEEP_GAMES_RUNNING":
+          if (actionName === "A") toggleKeepGamesRunningOnQuit();
+          break;
         case "USE_REMOTE_DESKTOP_PORTAL":
           if (actionName === "A") toggleUseRemoteDesktopPortal();
           break;
@@ -142,6 +165,9 @@ const SettingsMenu = ({ onClose }) => {
           break;
         case "SHOW_HIDDEN":
           if (actionName === "A") toggleShowHiddenGames();
+          break;
+        case "SHOW_RUNNER_ICON":
+          if (actionName === "A") toggleShowRunnerIcon();
           break;
         case "ZOOM":
           if (actionName === "LEFT") decreaseZoom();
@@ -161,8 +187,10 @@ const SettingsMenu = ({ onClose }) => {
       increaseAutorepeat,
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
+      toggleShowRunnerIcon,
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
+      toggleKeepGamesRunningOnQuit,
     ],
   );
 
@@ -299,6 +327,23 @@ case "ACCENT_COLOR":
     </FocusableRow>
   );
 
+        case "SHOW_RUNNER_ICON":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleShowRunnerIcon}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.showRunnerIcon}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleShowRunnerIcon}
+              />
+            </FocusableRow>
+          );
         case "USE_REMOTE_DESKTOP_PORTAL":
           return (
             <FocusableRow
@@ -316,6 +361,23 @@ case "ACCENT_COLOR":
               />
             </FocusableRow>
           );
+        case "KEEP_GAMES_RUNNING":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleKeepGamesRunningOnQuit}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.keepGamesRunningOnQuit}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleKeepGamesRunningOnQuit}
+              />
+            </FocusableRow>
+          );
         default:
           return null;
       }
@@ -325,8 +387,10 @@ case "ACCENT_COLOR":
       t,
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
+      toggleShowRunnerIcon,
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
+      toggleKeepGamesRunningOnQuit,
     ],
   );
 
@@ -367,6 +431,12 @@ case "ACCENT_COLOR":
         label: settings.showHiddenGames ? t("Disable") : t("Enable"),
         onClick: toggleShowHiddenGames,
       });
+    } else if (focusedItem?.type === "SHOW_RUNNER_ICON") {
+      buttons.push({
+        button: "A",
+        label: settings.showRunnerIcon ? t("Disable") : t("Enable"),
+        onClick: toggleShowRunnerIcon,
+      });
     } else if (focusedItem?.type === "DOUBLE_CONFIRM_POWER_MANAGEMENT") {
       buttons.push({
         button: "A",
@@ -380,6 +450,12 @@ case "ACCENT_COLOR":
         button: "A",
         label: settings.useRemoteDesktopPortal ? t("Disable") : t("Enable"),
         onClick: toggleUseRemoteDesktopPortal,
+      });
+    } else if (focusedItem?.type === "KEEP_GAMES_RUNNING") {
+      buttons.push({
+        button: "A",
+        label: settings.keepGamesRunningOnQuit ? t("Disable") : t("Enable"),
+        onClick: toggleKeepGamesRunningOnQuit,
       });
     }
 
@@ -395,8 +471,10 @@ case "ACCENT_COLOR":
     increaseAutorepeat,
     toggleShowRecentlyPlayed,
     toggleShowHiddenGames,
+    toggleShowRunnerIcon,
     toggleDoubleConfirmPowerManagement,
     toggleUseRemoteDesktopPortal,
+    toggleKeepGamesRunningOnQuit,
     onClose,
     t,
   ]);

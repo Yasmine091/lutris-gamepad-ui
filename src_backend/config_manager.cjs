@@ -11,6 +11,8 @@ const defaultConfig = {
   gamepadAutorepeatMs: 225,
   useRemoteDesktopPortal: true,
   accentColor: "#e50914",
+  showRunnerIcon: true,
+  keepGamesRunningOnQuit: false,
 };
 
 const SUBSCRIPTIONS = {};
