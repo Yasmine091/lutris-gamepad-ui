@@ -144,10 +144,14 @@ const BUTTON_CONTENT_MAP = {
     super: <CtrlXIcon />,
     l1: "1",
     r1: "2",
+    l2: "3",
+    r2: "4",
   },
   xbox: {
     l1: "LB",
     r1: "RB",
+    l2: "LT",
+    r2: "RT",
   },
   playstation: {
     a: <PlayStationCrossIcon />,
@@ -156,6 +160,8 @@ const BUTTON_CONTENT_MAP = {
     y: <PlayStationTriangleIcon />,
     l1: "L1",
     r1: "R1",
+    l2: "L2",
+    r2: "R2",
   },
   generic: {
     a: "A",
@@ -164,6 +170,8 @@ const BUTTON_CONTENT_MAP = {
     y: "Y",
     l1: "1",
     r1: "2",
+    l2: "L2",
+    r2: "R2",
     super: <SuperIcon />,
     left: <LeftArrowIcon />,
     right: <RightArrowIcon />,

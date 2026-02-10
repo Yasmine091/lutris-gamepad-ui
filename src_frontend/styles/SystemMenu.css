@@ -35,7 +35,7 @@
 .system-menu-toggle:focus {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
-  background-color: rgba(229, 9, 20, 0.8);
+  background-color: color-mix(in srgb, var(--accent-color) 80%, transparent);
 }
 
 .system-menu-overlay {

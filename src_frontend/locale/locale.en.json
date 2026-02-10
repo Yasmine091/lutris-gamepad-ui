@@ -39,6 +39,10 @@
     "Pause Game": "Pause Game",
     "Power": "Power",
     "Resume Game": "Resume Game",
+    "Next Shelf": "Next Shelf",
+    "Next Tab": "Next Tab",
+    "Prev Shelf": "Prev Shelf",
+    "Prev Tab": "Prev Tab",
     "Search": "Search",
     "Toggle Overlay": "Toggle Overlay"
   },
@@ -70,9 +74,13 @@
     "Try a different search term or press 'B' to clear.": "Try a different search term or press 'B' to clear."
   },
   "components/LibraryContainer.jsx": {
+    "All Games": "All Games",
     "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
     "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
+    "Categories": "Categories",
     "Loading library...": "Loading library...",
+    "Most Played": "Most Played",
+    "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\"",
     "Search Library": "Search Library",
     "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
@@ -98,6 +106,7 @@
     "Playtime: {{playtime}}": "Playtime: {{playtime}}"
   },
   "components/SettingsMenu.jsx": {
+    "Accent Color": "Accent Color",
     "Close": "Close",
     "Decrease": "Decrease",
     "Disable": "Disable",
