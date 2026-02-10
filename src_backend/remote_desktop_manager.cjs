@@ -239,7 +239,14 @@ async function _startRemoteDesktopSession(restoreToken) {
       "Fatal error occurred during remote desktop session startup:",
       error,
     );
-    toastError("Remote Desktop Manager", error);
+    // Auto-disable permanently
+    const { setAppConfig } = require("./config_manager.cjs");
+    setAppConfig("useRemoteDesktopPortal", false);
+
+    toastError(
+      "Remote Desktop Unsupported",
+      "Your operating system or desktop environment does not support Remote Desktop portals.\n\nThis feature has been disabled automatically.",
+    );
     await stopRemoteDesktopSession();
     throw error;
   }

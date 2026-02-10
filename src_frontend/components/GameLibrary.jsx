@@ -12,14 +12,39 @@ const GameLibrary = ({
   setGridRef,
   libraryContainerRef,
   searchQuery,
+  tabs = [],
+  activeTabId,
+  onTabSelect,
+  showTabs = true,
 }) => {
   const { t } = useTranslation();
   const hasResults = shelves.length > 0 && shelves[0].games.length > 0;
+  const showTabRow = showTabs && tabs.length > 1;
 
   return (
     <main ref={libraryContainerRef} className="game-library">
       <header className="library-header">
-        <h1>{searchQuery ? t("Search") : t("My Library")}</h1>
+        <div className="library-header-row">
+          <h1>{searchQuery ? t("Search") : t("My Library")}</h1>
+          {showTabRow && (
+            <div className="library-tabs" role="tablist">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab.id === activeTabId}
+                  className={`library-tab ${
+                    tab.id === activeTabId ? "active" : ""
+                  }`}
+                  onClick={() => onTabSelect?.(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </header>
       {hasResults ? (
         shelves.map((shelf, shelfIndex) => (

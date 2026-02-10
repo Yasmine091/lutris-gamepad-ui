@@ -36,7 +36,11 @@
     "Clear Search": "پاک‌کردن جستجو",
     "Force close {{gameTitle}}": "بستن اجباری {{gameTitle}}",
     "Launch Game": "راه‌اندازی بازی",
+    "Next Shelf": "Next Shelf",
+    "Next Tab": "Next Tab",
     "Power": "نیرو",
+    "Prev Shelf": "Prev Shelf",
+    "Prev Tab": "Prev Tab",
     "Search": "جستجو",
     "Toggle Overlay": "تغییر نمای رویی",
     "game": "بازی"
@@ -69,8 +73,12 @@
     "Try a different search term or press 'B' to clear.": "متن دیگری را جستجو کنید یا برای پاک‌کردن 'B' را فشار دهید."
   },
   "components/LibraryContainer.jsx": {
+    "All Games": "All Games",
     "Are you sure you want to close\n{{title}}?": "آیا مطمئنید که می‌خواهید\n{{title}} را ببندید؟",
+    "Categories": "Categories",
     "Loading library...": "در حال بارگذاری کتابخانه...",
+    "Most Played": "Most Played",
+    "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "نتایج برای \"{{searchQuery}}\"",
     "Search Library": "جستجوی کتابخانه",
     "This action will force-quit the game. Any unsaved progress may be lost.": "این کنش بازی را به‌صورت اجباری می‌بندد. هر پیشرفت ذخیره‌نشده‌ای ممکن است از دست برود."
@@ -94,10 +102,12 @@
     "Playtime: {{playtime}}": "زمان بازی: {{playtime}}"
   },
   "components/SettingsMenu.jsx": {
+    "Accent Color": "Accent Color",
     "Close": "بستن",
     "Decrease": "کاهش",
     "Disable": "غیرفعال کردن",
     "Double confirm power management": "Double confirm power management",
+    "Edit": "Edit",
     "Enable": "فعال کردن",
     "Gamepad Autorepeat Delay": "Gamepad Autorepeat Delay",
     "Increase": "افزایش",

@@ -84,6 +84,9 @@ const SettingsMenu = ({ onClose }) => {
 
   const menuItems = useMemo(() => {
     const result = [];
+    if (settings.accentColor !== undefined) {
+      result.push({ type: "ACCENT_COLOR", label: t("Accent Color") });
+    }
     if (settings.zoomFactor !== undefined) {
       result.push({ type: "ZOOM", label: t("Zoom Level") });
     }
@@ -111,12 +114,10 @@ const SettingsMenu = ({ onClose }) => {
         label: t("Double confirm power management"),
       });
     }
-    if (settings.useRemoteDesktopPortal !== undefined) {
       result.push({
         type: "USE_REMOTE_DESKTOP_PORTAL",
         label: t("Use Remote Desktop Portal"),
       });
-    }
     return result;
   }, [t, settings]);
 
@@ -273,6 +274,31 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
+case "ACCENT_COLOR":
+  return (
+    <FocusableRow
+      key={item.type}
+      isFocused={isFocused}
+      onMouseEnter={onMouseEnter}
+    >
+      <span className="settings-menu-label">{item.label}</span>
+
+      <input
+        type="color"
+        value={settings.accentColor || "#e50914"}
+        onChange={(e) => updateSetting("accentColor", e.target.value)}
+        style={{
+          width: 36,
+          height: 24,
+          padding: 0,
+          border: "none",
+          background: "none",
+          cursor: "pointer",
+        }}
+      />
+    </FocusableRow>
+  );
+
         case "USE_REMOTE_DESKTOP_PORTAL":
           return (
             <FocusableRow

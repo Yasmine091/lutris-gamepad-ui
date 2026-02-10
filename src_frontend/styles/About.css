@@ -48,9 +48,9 @@
 
 .about-row-value a:hover {
   text-decoration: underline;
-  color: #ff3b47;
+  color: var(--accent-color);
 }
 
 .focusable-row.focused .about-row-value a {
-  color: #ff5c65;
+  color: color-mix(in srgb, var(--accent-color) 85%, white);
 }

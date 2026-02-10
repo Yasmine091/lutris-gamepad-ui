@@ -10,6 +10,10 @@ const ControlsOverlay = ({
   onClearSearch,
   onShowSearchModal,
   onOpenSystemMenu,
+  onPrevTab,
+  onNextTab,
+  onPrevShelf,
+  onNextShelf,
 }) => {
   const { t } = useTranslation();
   return (
@@ -49,6 +53,38 @@ const ControlsOverlay = ({
             button="X"
             label={t("Search")}
             onClick={onShowSearchModal}
+          />
+        )}
+
+        {onPrevTab && (
+          <ButtonIcon
+            button="L2"
+            label={t("Prev Tab")}
+            onClick={onPrevTab}
+          />
+        )}
+
+        {onNextTab && (
+          <ButtonIcon
+            button="R2"
+            label={t("Next Tab")}
+            onClick={onNextTab}
+          />
+        )}
+
+        {onPrevShelf && (
+          <ButtonIcon
+            button="L1"
+            label={t("Prev Shelf")}
+            onClick={onPrevShelf}
+          />
+        )}
+
+        {onNextShelf && (
+          <ButtonIcon
+            button="R1"
+            label={t("Next Shelf")}
+            onClick={onNextShelf}
           />
         )}
 

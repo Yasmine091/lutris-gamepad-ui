@@ -15,6 +15,11 @@ const SettingsActionsContext = createContext(null);
 export const useSettingsState = () => useContext(SettingsStateContext);
 export const useSettingsActions = () => useContext(SettingsActionsContext);
 
+function applyAccentColor(color) {
+  if (!color) return;
+  document.documentElement.style.setProperty("--accent-color", color);
+}
+
 export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(null);
   const isMounted = useIsMounted();
@@ -25,6 +30,7 @@ export const SettingsProvider = ({ children }) => {
       .then((config) => {
         if (isMounted()) {
           setSettings(config || {});
+          applyAccentColor(config?.accentColor);
         }
       })
       .catch((err) => {
@@ -36,6 +42,7 @@ export const SettingsProvider = ({ children }) => {
 
     const unsubscribe = ipc.onAppConfigChanged((newConfig) => {
       setSettings(newConfig);
+      applyAccentColor(newConfig?.accentColor);
     });
 
     return () => {

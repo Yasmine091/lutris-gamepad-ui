@@ -24,6 +24,7 @@ const LibraryContainer = () => {
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTabId, setActiveTabId] = useState("all");
   const [numColumns, setNumColumns] = useState(0);
   const { showModal } = useModalActions();
   const { isModalOpen } = useModalState();
@@ -67,6 +68,29 @@ const LibraryContainer = () => {
     gridRefs.current[shelfIndex] = el;
   }, []);
 
+  const tabs = useMemo(() => {
+    const tabList = [
+      { id: "all", label: t("All Games") },
+      { id: "categories", label: t("Categories") },
+    ];
+
+    if (settings.showRecentlyPlayed) {
+      tabList.push({ id: "recent", label: t("Recently Played") });
+    }
+
+    tabList.push({ id: "mostPlayed", label: t("Most Played") });
+
+    return tabList;
+  }, [t, settings.showRecentlyPlayed]);
+
+  useEffect(() => {
+    if (tabs.length === 0) return;
+    const hasActiveTab = tabs.some((tab) => tab.id === activeTabId);
+    if (!hasActiveTab) {
+      setActiveTabId(tabs[0].id);
+    }
+  }, [tabs, activeTabId]);
+
   const shelves = useMemo(() => {
     cardRefs.current = [];
 
@@ -74,7 +98,9 @@ const LibraryContainer = () => {
       const searchShelves = [
         {
           title: t('Results for "{{searchQuery}}"', { searchQuery }),
-          games: currentGames.sort((a, b) => a.title.localeCompare(b.title)),
+          games: [...currentGames].sort((a, b) =>
+            a.title.localeCompare(b.title)
+          ),
         },
       ];
       return searchShelves;
@@ -86,23 +112,30 @@ const LibraryContainer = () => {
           (b.lastPlayed?.getTime() || 0) - (a.lastPlayed?.getTime() || 0)
       );
 
-    const newShelves = [];
-
+    const allGamesSorted = [...currentGames].sort((a, b) =>
+      a.title.localeCompare(b.title)
+    );
+    const recentlyPlayedShelves = [];
     if (settings.showRecentlyPlayed) {
       const recentlyPlayedGames = sortByLastPlayed(currentGames).slice(0, 10);
       if (recentlyPlayedGames.length > 0) {
-        newShelves.push({
-          title: "Recently Played",
+        recentlyPlayedShelves.push({
+          title: t("Recently Played"),
           games: recentlyPlayedGames,
         });
       }
     }
 
-    const allGamesSorted = currentGames.sort((a, b) =>
-      a.title.localeCompare(b.title)
-    );
-    newShelves.push({ title: "All Games", games: allGamesSorted });
+    const sortByPlaytime = (gameList) =>
+      [...gameList].sort(
+        (a, b) => (b.playtimeSeconds || 0) - (a.playtimeSeconds || 0)
+      );
 
+    const mostPlayedGames = sortByPlaytime(currentGames).filter(
+      (game) => (game.playtimeSeconds || 0) > 0
+    );
+
+    const categoriesShelves = [];
     const categoriesMap = new Map();
     currentGames.forEach((game) => {
       game.categories.forEach((categoryName) => {
@@ -119,14 +152,32 @@ const LibraryContainer = () => {
 
     sortedCategoryNames.forEach((categoryName) => {
       const categoryGames = categoriesMap.get(categoryName);
-      newShelves.push({
+      categoriesShelves.push({
         title: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
         games: sortByLastPlayed(categoryGames),
       });
     });
 
-    return newShelves;
-  }, [currentGames, searchQuery, t, settings]);
+    switch (activeTabId) {
+      case "all":
+        return [{ title: t("All Games"), games: allGamesSorted }];
+      case "categories":
+        return categoriesShelves;
+      case "recent":
+        return recentlyPlayedShelves;
+      case "mostPlayed":
+        return mostPlayedGames.length > 0
+          ? [
+              {
+                title: t("Most Played"),
+                games: mostPlayedGames.slice(0, 10),
+              },
+            ]
+          : [];
+      default:
+        return [{ title: t("All Games"), games: allGamesSorted }];
+    }
+  }, [currentGames, searchQuery, t, settings.showRecentlyPlayed, activeTabId]);
 
   const shelvesRef = useRef(shelves);
   const focusCoordsRef = useRef(focusCoords);
@@ -410,7 +461,7 @@ const LibraryContainer = () => {
     [shelves, numColumns]
   );
 
-  const handlePrevCategory = useCallback(() => {
+  const handlePrevShelf = useCallback(() => {
     setFocusCoords((current) => {
       if (shelves.length <= 1) return current;
       const nextShelf = (current.shelf - 1 + shelves.length) % shelves.length;
@@ -418,13 +469,33 @@ const LibraryContainer = () => {
     });
   }, [shelves]);
 
-  const handleNextCategory = useCallback(() => {
+  const handleNextShelf = useCallback(() => {
     setFocusCoords((current) => {
       if (shelves.length <= 1) return current;
       const nextShelf = (current.shelf + 1) % shelves.length;
       return { shelf: nextShelf, card: 0 };
     });
   }, [shelves]);
+
+  const handlePrevTab = useCallback(() => {
+    setActiveTabId((current) => {
+      if (tabs.length <= 1) return current;
+      const currentIndex = tabs.findIndex((tab) => tab.id === current);
+      const resolvedIndex = currentIndex >= 0 ? currentIndex : 0;
+      const nextIndex = (resolvedIndex - 1 + tabs.length) % tabs.length;
+      return tabs[nextIndex].id;
+    });
+  }, [tabs]);
+
+  const handleNextTab = useCallback(() => {
+    setActiveTabId((current) => {
+      if (tabs.length <= 1) return current;
+      const currentIndex = tabs.findIndex((tab) => tab.id === current);
+      const resolvedIndex = currentIndex >= 0 ? currentIndex : 0;
+      const nextIndex = (resolvedIndex + 1) % tabs.length;
+      return tabs[nextIndex].id;
+    });
+  }, [tabs]);
 
   const libraryInputHandler = useCallback(
     (input) => {
@@ -450,12 +521,28 @@ const LibraryContainer = () => {
           }
           break;
         case "L1":
-          playActionSound();
-          handlePrevCategory();
+          if (shelves.length > 1) {
+            playActionSound();
+            handlePrevShelf();
+          }
           break;
         case "R1":
-          playActionSound();
-          handleNextCategory();
+          if (shelves.length > 1) {
+            playActionSound();
+            handleNextShelf();
+          }
+          break;
+        case "L2":
+          if (!searchQuery && tabs.length > 1) {
+            playActionSound();
+            handlePrevTab();
+          }
+          break;
+        case "R2":
+          if (!searchQuery && tabs.length > 1) {
+            playActionSound();
+            handleNextTab();
+          }
           break;
         case "X":
           playActionSound();
@@ -467,11 +554,14 @@ const LibraryContainer = () => {
       shelves,
       focusCoords,
       searchQuery,
+      tabs,
       handleLaunchGame,
       clearSearchCb,
       showSearchModalCb,
-      handlePrevCategory,
-      handleNextCategory,
+      handlePrevShelf,
+      handleNextShelf,
+      handlePrevTab,
+      handleNextTab,
       handleNavigation,
     ]
   );
@@ -540,6 +630,14 @@ const LibraryContainer = () => {
       controlsOverlayProps.onClearSearch = clearSearchCb;
     }
     controlsOverlayProps.onShowSearchModal = showSearchModalCb;
+    if (!searchQuery && tabs.length > 1) {
+      controlsOverlayProps.onPrevTab = handlePrevTab;
+      controlsOverlayProps.onNextTab = handleNextTab;
+    }
+    if (shelves.length > 1) {
+      controlsOverlayProps.onPrevShelf = handlePrevShelf;
+      controlsOverlayProps.onNextShelf = handleNextShelf;
+    }
   }
 
   if (runningGame) {
@@ -562,6 +660,10 @@ const LibraryContainer = () => {
         setGridRef={setGridRef}
         libraryContainerRef={libraryContainerRef}
         searchQuery={searchQuery}
+        tabs={tabs}
+        activeTabId={activeTabId}
+        onTabSelect={setActiveTabId}
+        showTabs={!searchQuery}
       />
       <ControlsOverlay {...controlsOverlayProps} />
     </>

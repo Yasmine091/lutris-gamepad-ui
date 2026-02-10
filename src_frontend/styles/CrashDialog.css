@@ -72,7 +72,7 @@
   color: var(--text-primary);
   border-color: var(--accent-color);
   transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--accent-color) 50%, transparent);
 }
 
 .crash-dialog-button:hover {

@@ -36,7 +36,11 @@
     "Clear Search": "Annulla ricerca",
     "Force close {{gameTitle}}": "Forza chiusura di {{gameTitle}}",
     "Launch Game": "Avvia gioco",
+    "Next Shelf": "Next Shelf",
+    "Next Tab": "Next Tab",
     "Power": "Menu di sistema",
+    "Prev Shelf": "Prev Shelf",
+    "Prev Tab": "Prev Tab",
     "Search": "Cerca",
     "Toggle Overlay": "Visualizza overlay",
     "game": "gioco"
@@ -71,7 +75,9 @@
   "components/LibraryContainer.jsx": {
     "All Games": "Tutti i giochi",
     "Are you sure you want to close\n{{title}}?": "Forzare la chiusura di\n{{title}}?",
+    "Categories": "Categories",
     "Loading library...": "Caricamento libreria...",
+    "Most Played": "Most Played",
     "Recently Played": "Giocati di recente",
     "Results for \"{{searchQuery}}\"": "Risultati per \"{{searchQuery}}\"",
     "Search Library": "Cerca nella libreria",
@@ -96,10 +102,12 @@
     "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
   },
   "components/SettingsMenu.jsx": {
+    "Accent Color": "Accent Color",
     "Close": "Chiudi",
     "Decrease": "Diminuisci",
     "Disable": "Disattiva",
     "Double confirm power management": "Double confirm power management",
+    "Edit": "Edit",
     "Enable": "Attivta",
     "Gamepad Autorepeat Delay": "Gamepad Autorepeat Delay",
     "Increase": "Aumenta",
