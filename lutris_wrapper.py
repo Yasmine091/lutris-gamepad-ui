@@ -26,6 +26,11 @@ def get_coverart_path_main():
     _print_subcommand_output(settings.COVERART_PATH)
 
 
+def get_bannerart_path_main():
+    banner_path = getattr(settings, "BANNER_PATH", None)
+    _print_subcommand_output(banner_path)
+
+
 def get_runtime_icon_path_main(icon_name: str):
     icon_path = get_runtime_icon_path(icon_name)
 
@@ -77,6 +82,9 @@ def lutris_main():
 def main():
     if "--get-coverart-path" in sys.argv:
         get_coverart_path_main()
+
+    elif "--get-bannerart-path" in sys.argv:
+        get_bannerart_path_main()
 
     elif "--get-runtime-icon-path" in sys.argv:
         get_runtime_icon_path_main(sys.argv[sys.argv.index("--get-runtime-icon-path") + 1])

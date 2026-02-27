@@ -22,11 +22,23 @@
 
 .library-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.5rem;
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  padding: 0.25rem 0.2rem 0.5rem;
+  scrollbar-width: thin;
+}
+
+.library-tabs-wrap {
+  margin-top: 0.15rem;
+  margin-bottom: 1.3rem;
+  overflow: visible;
 }
 
 .library-tab {
+  flex: 0 0 auto;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: var(--text-secondary);
@@ -39,7 +51,7 @@
 }
 
 .library-tab:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.015);
   color: var(--text-primary);
 }
 

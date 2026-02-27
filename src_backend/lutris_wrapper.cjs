@@ -38,6 +38,10 @@ async function getCoverartPath() {
   return await invokeLutrisSubcommand("get-coverart-path");
 }
 
+async function getBannerartPath() {
+  return await invokeLutrisSubcommand("get-bannerart-path");
+}
+
 async function getRuntimeIconPath(iconName) {
   return await invokeLutrisSubcommand("get-runtime-icon-path", [iconName]);
 }
@@ -52,6 +56,7 @@ async function getLutrisGames() {
 
 module.exports = {
   getCoverartPath,
+  getBannerartPath,
   getRuntimeIconPath,
   getAllGamesCategories,
   getLutrisGames,

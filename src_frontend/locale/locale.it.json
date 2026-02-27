@@ -65,7 +65,8 @@
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Ultimo avvio: {{date}}",
     "Never": "Mai giocato",
-    "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
+    "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}",
+    "Running": "Running"
   },
   "components/GameLibrary.jsx": {
     "Add games in Lutris and reload.": "Aggiungi giochi da Lutris e aggiorna la libreria.",
@@ -74,6 +75,25 @@
     "No results for \"{{searchQuery}}\"": "Nessun risultato per \"{{searchQuery}}\"",
     "Search": "Ricerca",
     "Try a different search term or press 'B' to clear.": "Prova un'altra ricerca o premi 'B' per annullare."
+  },
+  "components/GameShelf.jsx": {
+    "Category": "Category",
+    "Force close": "Force close",
+    "Last played": "Last played",
+    "Last played: {{date}}": "Last played: {{date}}",
+    "Launch Game": "Launch Game",
+    "Never": "Never",
+    "Next": "Next",
+    "Pause Game": "Pause Game",
+    "Platform": "Platform",
+    "Playtime": "Playtime",
+    "Playtime: {{playtime}}": "Playtime: {{playtime}}",
+    "Previous": "Previous",
+    "Release year": "Release year",
+    "Resume Game": "Resume Game",
+    "Running": "Running",
+    "Uncategorized": "Uncategorized",
+    "Unknown": "Unknown"
   },
   "components/LibraryContainer.jsx": {
     "All Games": "Tutti i giochi",

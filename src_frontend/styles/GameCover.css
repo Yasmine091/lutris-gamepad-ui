@@ -16,3 +16,14 @@
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
   line-height: 1.3;
 }
+
+.game-cover-hero {
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 1rem 1.2rem;
+}
+
+.game-cover-title.hero {
+  font-size: 1rem;
+  text-align: left;
+}

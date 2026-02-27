@@ -24,6 +24,7 @@ const {
 const { toggleWindowShow } = require("./window_manager.cjs");
 const {
   getCoverartPath,
+  getBannerartPath,
   getRuntimeIconPath,
   getAllGamesCategories,
   getLutrisGames,
@@ -317,6 +318,33 @@ async function getGames() {
     }
   } catch (e) {
     logError("Could not process game cover art:", e);
+  }
+
+  try {
+    const lutrisBannerDir = await getBannerartPath();
+    if (lutrisBannerDir) {
+      const lutrisBannerDirFiles = await readdir(lutrisBannerDir);
+
+      for (const game of games) {
+        if (game.bannerPath) {
+          addWhitelistedFile(game.bannerPath);
+          continue;
+        }
+
+        if (game.slug) {
+          const bannerFilename = lutrisBannerDirFiles.find((f) =>
+            f.startsWith(`${game.slug}.`),
+          );
+          if (bannerFilename) {
+            const bannerPath = path.join(lutrisBannerDir, bannerFilename);
+            game.bannerPath = bannerPath;
+            addWhitelistedFile(bannerPath);
+          }
+        }
+      }
+    }
+  } catch (e) {
+    logWarn("Could not process game banner art:", e);
   }
 
   games.forEach((g) => {

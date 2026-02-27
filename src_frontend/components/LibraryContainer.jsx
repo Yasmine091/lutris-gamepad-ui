@@ -3,7 +3,6 @@ import { useLutris } from "../contexts/LutrisContext";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
 import GameLibrary from "./GameLibrary";
 import LoadingIndicator from "./LoadingIndicator";
-import RunningGame from "./RunningGame";
 import ControlsOverlay from "./ControlsOverlay";
 import OnScreenKeyboard from "./OnScreenKeyboard";
 import { playActionSound } from "../utils/sound";
@@ -42,23 +41,46 @@ const LibraryContainer = () => {
   const gridRefs = useRef([]);
   const gameCloseCloseModalRef = useRef(null);
   const prevFocusCoords = useRef(null);
+  const runningGameIds = useMemo(() => {
+    const ids = new Set();
+    if (Array.isArray(runningGame)) {
+      runningGame.forEach((game) => {
+        const id = Number(game?.id);
+        if (Number.isFinite(id)) {
+          ids.add(id);
+        }
+      });
+      return ids;
+    }
+
+    const singleId = Number(runningGame?.id);
+    if (Number.isFinite(singleId)) {
+      ids.add(singleId);
+    }
+    return ids;
+  }, [runningGame]);
 
   const currentGames = useMemo(() => {
-    return (games || []).filter((g) => {
-      if (!settings.showHiddenGames && g.hidden) {
-        return false;
-      }
+    return (games || [])
+      .filter((g) => {
+        if (!settings.showHiddenGames && g.hidden) {
+          return false;
+        }
 
-      if (
-        searchQuery &&
-        !g.title.toLowerCase().includes(searchQuery.toLowerCase())
-      ) {
-        return false;
-      }
+        if (
+          searchQuery &&
+          !g.title.toLowerCase().includes(searchQuery.toLowerCase())
+        ) {
+          return false;
+        }
 
-      return true;
-    });
-  }, [searchQuery, settings, games]);
+        return true;
+      })
+      .map((g) => ({
+        ...g,
+        isRunning: runningGameIds.has(Number(g.id)),
+      }));
+  }, [searchQuery, settings, games, runningGameIds]);
 
   const setShelfRef = useCallback((el, shelfIndex) => {
     shelfRefs.current[shelfIndex] = el;
@@ -76,19 +98,25 @@ const LibraryContainer = () => {
   }, []);
 
   const tabs = useMemo(() => {
-    const tabList = [
-      { id: "all", label: t("All Games") },
-      { id: "categories", label: t("Categories") },
-    ];
+    const categoriesMap = new Map();
+    currentGames.forEach((game) => {
+      (game.categories || []).forEach((categoryName) => {
+        if (!categoriesMap.has(categoryName)) {
+          categoriesMap.set(categoryName, 0);
+        }
+        categoriesMap.set(categoryName, categoriesMap.get(categoryName) + 1);
+      });
+    });
 
-    if (settings.showRecentlyPlayed) {
-      tabList.push({ id: "recent", label: t("Recently Played") });
-    }
+    const categoryTabs = [...categoriesMap.keys()]
+      .sort((a, b) => a.localeCompare(b))
+      .map((categoryName) => ({
+        id: `category:${categoryName}`,
+        label: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
+      }));
 
-    tabList.push({ id: "mostPlayed", label: t("Most Played") });
-
-    return tabList;
-  }, [t, settings.showRecentlyPlayed]);
+    return [{ id: "all", label: t("All Games") }, ...categoryTabs];
+  }, [t, currentGames]);
 
   useEffect(() => {
     if (tabs.length === 0) return;
@@ -104,10 +132,12 @@ const LibraryContainer = () => {
     if (searchQuery) {
       const searchShelves = [
         {
+          id: "search-results",
           title: t('Results for "{{searchQuery}}"', { searchQuery }),
           games: [...currentGames].sort((a, b) =>
             a.title.localeCompare(b.title)
           ),
+          layout: "default",
         },
       ];
       return searchShelves;
@@ -119,33 +149,19 @@ const LibraryContainer = () => {
           (b.lastPlayed?.getTime() || 0) - (a.lastPlayed?.getTime() || 0),
       );
 
-    const allGamesSorted = [...currentGames].sort((a, b) =>
-      a.title.localeCompare(b.title)
-    );
-    const recentlyPlayedShelves = [];
-    if (settings.showRecentlyPlayed) {
-      const recentlyPlayedGames = sortByLastPlayed(currentGames).slice(0, 10);
-      if (recentlyPlayedGames.length > 0) {
-        recentlyPlayedShelves.push({
-          title: t("Recently Played"),
-          games: recentlyPlayedGames,
-        });
-      }
-    }
-
     const sortByPlaytime = (gameList) =>
       [...gameList].sort(
-        (a, b) => (b.playtimeSeconds || 0) - (a.playtimeSeconds || 0)
+        (a, b) => (b.playtimeSeconds || 0) - (a.playtimeSeconds || 0),
       );
 
-    const mostPlayedGames = sortByPlaytime(currentGames).filter(
-      (game) => (game.playtimeSeconds || 0) > 0
+    const allGamesSorted = [...currentGames].sort((a, b) =>
+      a.title.localeCompare(b.title),
     );
 
     const categoriesShelves = [];
     const categoriesMap = new Map();
     currentGames.forEach((game) => {
-      game.categories.forEach((categoryName) => {
+      (game.categories || []).forEach((categoryName) => {
         if (!categoriesMap.has(categoryName)) {
           categoriesMap.set(categoryName, []);
         }
@@ -160,31 +176,54 @@ const LibraryContainer = () => {
     sortedCategoryNames.forEach((categoryName) => {
       const categoryGames = categoriesMap.get(categoryName);
       categoriesShelves.push({
+        id: `category:${categoryName}`,
         title: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
         games: sortByLastPlayed(categoryGames),
+        layout: "default",
       });
     });
 
-    switch (activeTabId) {
-      case "all":
-        return [{ title: t("All Games"), games: allGamesSorted }];
-      case "categories":
-        return categoriesShelves;
-      case "recent":
-        return recentlyPlayedShelves;
-      case "mostPlayed":
-        return mostPlayedGames.length > 0
-          ? [
-              {
-                title: t("Most Played"),
-                games: mostPlayedGames.slice(0, 10),
-              },
-            ]
-          : [];
-      default:
-        return [{ title: t("All Games"), games: allGamesSorted }];
+    const selectedMainShelf =
+      activeTabId === "all"
+        ? {
+            id: "all-games",
+            title: t("All Games"),
+            games: allGamesSorted,
+            layout: "default",
+          }
+        : categoriesShelves.find((shelf) => shelf.id === activeTabId) || {
+            id: "all-games",
+            title: t("All Games"),
+            games: allGamesSorted,
+            layout: "default",
+          };
+
+    const result = [];
+    const recentlyPlayedGames = sortByLastPlayed(currentGames)
+      .filter((game) => !!game.lastPlayed)
+      .slice(0, 6);
+    const mostPlayedFallback = sortByPlaytime(currentGames)
+      .filter((game) => (game.playtimeSeconds || 0) > 0)
+      .slice(0, 6);
+    const heroGames =
+      recentlyPlayedGames.length > 0
+        ? recentlyPlayedGames
+        : mostPlayedFallback.length > 0
+          ? mostPlayedFallback
+          : allGamesSorted.slice(0, 6);
+
+    if (heroGames.length > 0) {
+      result.push({
+        id: "hero-recently-played",
+        title: t("Recently Played"),
+        games: heroGames,
+        layout: "hero",
+      });
     }
-  }, [currentGames, searchQuery, t, settings.showRecentlyPlayed, activeTabId]);
+
+    result.push(selectedMainShelf);
+    return result;
+  }, [currentGames, searchQuery, t, activeTabId]);
 
   const shelvesRef = useRef(shelves);
   const focusCoordsRef = useRef(focusCoords);
@@ -201,7 +240,8 @@ const LibraryContainer = () => {
     const calculateAndUpdateColumns = () => {
       let maxColumns = 0;
 
-      gridRefs.current.forEach((gridEl) => {
+      gridRefs.current.forEach((gridEl, shelfIndex) => {
+        if (shelves[shelfIndex]?.layout === "hero") return;
         if (gridEl) {
           const style = window.getComputedStyle(gridEl);
           const columns = style
@@ -224,7 +264,8 @@ const LibraryContainer = () => {
     calculateAndUpdateColumns();
 
     const observers = [];
-    gridRefs.current.forEach((gridEl) => {
+    gridRefs.current.forEach((gridEl, shelfIndex) => {
+      if (shelves[shelfIndex]?.layout === "hero") return;
       if (!gridEl) return;
       const observer = new ResizeObserver(calculateAndUpdateColumns);
       observer.observe(gridEl);
@@ -260,7 +301,7 @@ const LibraryContainer = () => {
   );
 
   useEffect(() => {
-    if (loading || runningGame) return;
+    if (loading) return;
 
     cardRefs.current?.forEach((shelfOfRefs) => {
       if (Array.isArray(shelfOfRefs)) {
@@ -271,11 +312,15 @@ const LibraryContainer = () => {
     });
 
     const { shelf, card, preventScroll } = focusCoords;
+    const focusedShelfLayout = shelves[shelf]?.layout;
+    const isHeroFocusedShelf = focusedShelfLayout === "hero";
 
     const targetNode = cardRefs.current[shelf]?.[card];
     if (targetNode) {
       targetNode.classList.add("focused");
       if (preventScroll) {
+        targetNode.focus({ preventScroll: true });
+      } else if (isHeroFocusedShelf) {
         targetNode.focus({ preventScroll: true });
       } else {
         targetNode.focus();
@@ -309,14 +354,17 @@ const LibraryContainer = () => {
     }
 
     prevFocusCoords.current = focusCoords;
-  }, [focusCoords, loading, runningGame, shelves.length, numColumns]);
+  }, [focusCoords, loading, shelves, numColumns]);
 
   const focusedGame = useMemo(
+    () => shelves[focusCoords.shelf]?.games?.[focusCoords.card] || null,
+    [shelves, focusCoords],
+  );
+
+  const isFocusedGameRunning = useMemo(
     () =>
-      !runningGame && shelves.length > 0 && shelves[0]?.games.length > 0
-        ? shelves[focusCoords.shelf]?.games[focusCoords.card]
-        : null,
-    [runningGame, shelves, focusCoords],
+      !!runningGame && !!focusedGame && Number(runningGame.id) === Number(focusedGame.id),
+    [runningGame, focusedGame],
   );
 
   const showSearchModalCb = useCallback(() => {
@@ -416,33 +464,46 @@ const LibraryContainer = () => {
 
         const move = (current, direction, numColumns, shelves) => {
           const { shelf, card } = current;
-          const currentShelfGames = shelves[shelf]?.games;
+          const currentShelf = shelves[shelf];
+          const currentShelfGames = currentShelf?.games;
 
           if (!currentShelfGames?.length) return current;
 
-          const totalRows = Math.ceil(currentShelfGames.length / numColumns);
-          const currentRow = Math.floor(card / numColumns);
-          const currentCol = card % numColumns;
+          const effectiveNumColumns =
+            currentShelf?.layout === "hero"
+              ? currentShelfGames.length
+              : numColumns;
+
+          const totalRows = Math.ceil(
+            currentShelfGames.length / effectiveNumColumns,
+          );
+          const currentRow = Math.floor(card / effectiveNumColumns);
+          const currentCol = card % effectiveNumColumns;
 
           switch (direction) {
             case "UP": {
               if (currentRow > 0) {
-                return { shelf, card: card - numColumns };
+                return { shelf, card: card - effectiveNumColumns };
               } else {
                 const prevShelfIndex =
                   (shelf - 1 + shelves.length) % shelves.length;
-                const prevShelfGames = shelves[prevShelfIndex].games;
+                const prevShelf = shelves[prevShelfIndex];
+                const prevShelfGames = prevShelf.games;
                 if (!prevShelfGames.length) return current;
+                const prevShelfColumns =
+                  prevShelf.layout === "hero"
+                    ? prevShelfGames.length
+                    : numColumns;
 
                 const lastCardInPrevShelf = prevShelfGames.length - 1;
                 const lastRowInPrevShelf = Math.floor(
-                  lastCardInPrevShelf / numColumns,
+                  lastCardInPrevShelf / prevShelfColumns,
                 );
 
                 return {
                   shelf: prevShelfIndex,
                   card: Math.min(
-                    lastRowInPrevShelf * numColumns + currentCol,
+                    lastRowInPrevShelf * prevShelfColumns + currentCol,
                     lastCardInPrevShelf,
                   ),
                 };
@@ -453,7 +514,7 @@ const LibraryContainer = () => {
                 return {
                   shelf,
                   card: Math.min(
-                    card + numColumns,
+                    card + effectiveNumColumns,
                     currentShelfGames.length - 1,
                   ),
                 };
@@ -469,9 +530,9 @@ const LibraryContainer = () => {
             }
             case "LEFT":
             case "RIGHT": {
-              const rowStartCard = currentRow * numColumns;
+              const rowStartCard = currentRow * effectiveNumColumns;
               const rowEndCard = Math.min(
-                rowStartCard + numColumns - 1,
+                rowStartCard + effectiveNumColumns - 1,
                 currentShelfGames.length - 1,
               );
 
@@ -549,6 +610,12 @@ const LibraryContainer = () => {
 
   const libraryInputHandler = useCallback(
     (input) => {
+      const currentFocusedGame = shelves[focusCoords.shelf]?.games[focusCoords.card];
+      const focusedIsRunning =
+        !!runningGame &&
+        !!currentFocusedGame &&
+        Number(runningGame.id) === Number(currentFocusedGame.id);
+
       switch (input.name) {
         case "UP":
         case "DOWN":
@@ -557,15 +624,16 @@ const LibraryContainer = () => {
           handleNavigation(input.name);
           break;
         case "A":
-          const currentFocusedGame =
-            shelves[focusCoords.shelf]?.games[focusCoords.card];
           if (currentFocusedGame) {
             playActionSound();
             handleLaunchGame(currentFocusedGame);
           }
           break;
         case "B":
-          if (searchQuery) {
+          if (focusedIsRunning) {
+            playActionSound();
+            closeRunningGameDialogCb();
+          } else if (searchQuery) {
             playActionSound();
             clearSearchCb();
           }
@@ -595,17 +663,25 @@ const LibraryContainer = () => {
           }
           break;
         case "X":
-          playActionSound();
-          showSearchModalCb();
+          if (focusedIsRunning) {
+            playActionSound();
+            toggleGamePauseCb();
+          } else {
+            playActionSound();
+            showSearchModalCb();
+          }
           break;
       }
     },
     [
       shelves,
       focusCoords,
+      runningGame,
       searchQuery,
       tabs,
       handleLaunchGame,
+      closeRunningGameDialogCb,
+      toggleGamePauseCb,
       clearSearchCb,
       showSearchModalCb,
       handlePrevShelf,
@@ -619,27 +695,7 @@ const LibraryContainer = () => {
   useScopedInput(
     libraryInputHandler,
     LibraryContainerFocusID,
-    !runningGame && !isModalOpen,
-  );
-
-  const withRunningGameInputHandler = useCallback(
-    (input) => {
-      if (input.name === "B") {
-        playActionSound();
-        closeRunningGameDialogCb();
-      }
-      if (input.name === "X") {
-        playActionSound();
-        toggleGamePauseCb();
-      }
-    },
-    [closeRunningGameDialogCb, toggleGamePauseCb],
-  );
-
-  useScopedInput(
-    withRunningGameInputHandler,
-    LibraryContainerFocusID,
-    !!runningGame && !isModalOpen,
+    !isModalOpen,
   );
 
   useGlobalShortcut([
@@ -673,13 +729,13 @@ const LibraryContainer = () => {
     onOpenSystemMenu: openSystemMenu,
   };
 
-  if (runningGame) {
+  if (!isModalOpen && isFocusedGameRunning) {
     controlsOverlayProps.onCloseRunningGame = closeRunningGameDialogCb;
     controlsOverlayProps.onToggleGamePause = toggleGamePauseCb;
     controlsOverlayProps.isGamePaused = isGamePaused;
-    controlsOverlayProps.runningGameTitle = runningGame.title;
+    controlsOverlayProps.runningGameTitle = focusedGame?.title || runningGame?.title;
   } else if (!isModalOpen) {
-    if (focusedGame) {
+    if (focusedGame && !runningGame) {
       controlsOverlayProps.onLaunchGame = stableOnLaunchGame;
     }
     if (searchQuery) {
@@ -696,14 +752,6 @@ const LibraryContainer = () => {
     }
   }
 
-  if (runningGame) {
-    return (
-      <ControlsOverlay {...controlsOverlayProps}>
-        <RunningGame game={runningGame} isPaused={isGamePaused} />
-      </ControlsOverlay>
-    );
-  }
-
   return (
     <ControlsOverlay {...controlsOverlayProps}>
       <GameLibrary
@@ -718,6 +766,12 @@ const LibraryContainer = () => {
         tabs={tabs}
         activeTabId={activeTabId}
         onTabSelect={setActiveTabId}
+        focusCoords={focusCoords}
+        heroFeaturedGame={focusedGame || runningGame || null}
+        heroIsRunning={isFocusedGameRunning}
+        isGamePaused={isGamePaused}
+        onHeroPauseResume={toggleGamePauseCb}
+        onHeroForceClose={closeRunningGameDialogCb}
         showTabs={!searchQuery}
       />
     </ControlsOverlay>

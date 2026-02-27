@@ -65,7 +65,8 @@
   "components/GameCard.jsx": {
     "Last played: {{date}}": "آخرین بازی: {{date}}",
     "Never": "هرگز",
-    "Playtime: {{playtime}}": "زمان بازی: {{playtime}}"
+    "Playtime: {{playtime}}": "زمان بازی: {{playtime}}",
+    "Running": "Running"
   },
   "components/GameLibrary.jsx": {
     "Add games in Lutris and reload.": "بازی‌ها را در لوتریس بیافزایید و دوباره بارگذاری کنید.",
@@ -74,6 +75,25 @@
     "No results for \"{{searchQuery}}\"": "هیچ نتیجه‌ای برای \"{{searchQuery}}\" یافت نشد",
     "Search": "جستجو",
     "Try a different search term or press 'B' to clear.": "متن دیگری را جستجو کنید یا برای پاک‌کردن 'B' را فشار دهید."
+  },
+  "components/GameShelf.jsx": {
+    "Category": "Category",
+    "Force close": "Force close",
+    "Last played": "Last played",
+    "Last played: {{date}}": "Last played: {{date}}",
+    "Launch Game": "Launch Game",
+    "Never": "Never",
+    "Next": "Next",
+    "Pause Game": "Pause Game",
+    "Platform": "Platform",
+    "Playtime": "Playtime",
+    "Playtime: {{playtime}}": "Playtime: {{playtime}}",
+    "Previous": "Previous",
+    "Release year": "Release year",
+    "Resume Game": "Resume Game",
+    "Running": "Running",
+    "Uncategorized": "Uncategorized",
+    "Unknown": "Unknown"
   },
   "components/LibraryContainer.jsx": {
     "All Games": "همه بازی‌ها",

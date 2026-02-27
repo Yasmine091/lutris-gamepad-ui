@@ -64,7 +64,8 @@
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Last played: {{date}}",
     "Never": "Never",
-    "Playtime: {{playtime}}": "Playtime: {{playtime}}"
+    "Playtime: {{playtime}}": "Playtime: {{playtime}}",
+    "Running": "Running"
   },
   "components/GameLibrary.jsx": {
     "Add games in Lutris and reload.": "Add games in Lutris and reload.",
@@ -74,13 +75,26 @@
     "Search": "Search",
     "Try a different search term or press 'B' to clear.": "Try a different search term or press 'B' to clear."
   },
+  "components/GameShelf.jsx": {
+    "Category": "Category",
+    "Force close": "Force close",
+    "Last played": "Last played",
+    "Launch Game": "Launch Game",
+    "Never": "Never",
+    "Pause Game": "Pause Game",
+    "Platform": "Platform",
+    "Playtime": "Playtime",
+    "Release year": "Release year",
+    "Resume Game": "Resume Game",
+    "Running": "Running",
+    "Uncategorized": "Uncategorized",
+    "Unknown": "Unknown"
+  },
   "components/LibraryContainer.jsx": {
     "All Games": "All Games",
     "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
     "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
-    "Categories": "Categories",
     "Loading library...": "Loading library...",
-    "Most Played": "Most Played",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\"",
     "Search Library": "Search Library",
