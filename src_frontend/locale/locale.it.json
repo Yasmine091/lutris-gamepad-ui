@@ -36,13 +36,11 @@
     "Clear Search": "Annulla ricerca",
     "Force close": "Forza chiusura di",
     "Launch Game": "Avvia gioco",
-    "Pause Game": "Pause Game",
+    "Next Shelf": "Prossima Scaffale",
+    "Next Tab": "Prossima Scheda",
     "Power": "Menu di sistema",
-    "Resume Game": "Resume Game",
-    "Next Shelf": "Next Shelf",
-    "Next Tab": "Next Tab",
-    "Prev Shelf": "Prev Shelf",
-    "Prev Tab": "Prev Tab",
+    "Prev Shelf": "Scaffale Precedente",
+    "Prev Tab": "Scheda Precedente",
     "Search": "Cerca",
     "Toggle Overlay": "Visualizza overlay",
     "game": "gioco"
@@ -77,15 +75,15 @@
   "components/LibraryContainer.jsx": {
     "All Games": "Tutti i giochi",
     "Are you sure you want to close\n{{title}}?": "Forzare la chiusura di\n{{title}}?",
-    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
-    "Categories": "Categories",
+    "Are you sure you want to pause\n{{title}}?": "Sei sicuro di voler mettere in pausa\n{{title}}?",
+    "Categories": "Categorie",
     "Loading library...": "Caricamento libreria...",
-    "Most Played": "Most Played",
+    "Most Played": "Più giocati",
     "Recently Played": "Giocati di recente",
     "Results for \"{{searchQuery}}\"": "Risultati per \"{{searchQuery}}\"",
     "Search Library": "Cerca nella libreria",
     "This action will force-quit the game. Any unsaved progress may be lost.": "Questa operazione forzerà la chiusura del gioco. Eventuali progressi non salvati andranno persi.",
-    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
+    "This feature is experimental. Pausing the game may cause issues.": "Questa funzionalità è sperimentale. Mettere in pausa il gioco potrebbe causare problemi."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Caricamento..."
@@ -107,15 +105,14 @@
     "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
   },
   "components/SettingsMenu.jsx": {
-    "Accent Color": "Accent Color",
+    "Accent Color": "Colore Evidenziazione",
     "Close": "Chiudi",
     "Decrease": "Diminuisci",
     "Disable": "Disattiva",
     "Double Confirm Power Management": "Doppia conferma menu spegnimento",
+    "Edit": "Modifica",
     "Enable": "Attiva",
     "Gamepad Autorepeat Delay": "Ritardo autoripetizione gamepad",
-    "Double confirm power management": "Double confirm power management",
-    "Edit": "Edit",
     "Increase": "Aumenta",
     "Keep Games Running On Quit": "Mantieni i giochi in esecuzione alla chiusura",
     "Recently Played Shelf": "Giocati di recente",

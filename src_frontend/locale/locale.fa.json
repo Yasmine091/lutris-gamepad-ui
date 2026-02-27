@@ -36,13 +36,11 @@
     "Clear Search": "پاک‌کردن جستجو",
     "Force close": "بستن اجباری",
     "Launch Game": "راه‌اندازی بازی",
-    "Pause Game": "Pause Game",
+    "Pause Game": "توقف بازی",
     "Power": "نیرو",
-    "Resume Game": "Resume Game",
-    "Next Shelf": "Next Shelf",
-    "Next Tab": "Next Tab",
-    "Prev Shelf": "Prev Shelf",
-    "Prev Tab": "Prev Tab",
+    "Resume Game": "ادامه بازی",
+    "Prev Shelf": "قفسه قبلی",
+    "Prev Tab": "تب قبلی",
     "Search": "جستجو",
     "Toggle Overlay": "تغییر نمای رویی",
     "game": "بازی"
@@ -75,17 +73,17 @@
     "Try a different search term or press 'B' to clear.": "متن دیگری را جستجو کنید یا برای پاک‌کردن 'B' را فشار دهید."
   },
   "components/LibraryContainer.jsx": {
-    "All Games": "All Games",
+    "All Games": "همه بازی‌ها",
     "Are you sure you want to close\n{{title}}?": "آیا مطمئنید که می‌خواهید\n{{title}} را ببندید؟",
-    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
-    "Categories": "Categories",
+    "Are you sure you want to pause\n{{title}}?": "آیا مطمئنید که می‌خواهید\n{{title}} را متوقف کنید؟",
+    "Categories": "دسته‌بندی‌ها",
     "Loading library...": "در حال بارگذاری کتابخانه...",
-    "Most Played": "Most Played",
-    "Recently Played": "Recently Played",
+    "Most Played": "بیشترین بازی شده",
+    "Recently Played": "اخیراً بازی شده",
     "Results for \"{{searchQuery}}\"": "نتایج برای \"{{searchQuery}}\"",
     "Search Library": "جستجوی کتابخانه",
     "This action will force-quit the game. Any unsaved progress may be lost.": "این کنش بازی را به‌صورت اجباری می‌بندد. هر پیشرفت ذخیره‌نشده‌ای ممکن است از دست برود.",
-    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
+    "This feature is experimental. Pausing the game may cause issues.": "این ویژگی آزمایشی است. متوقف کردن بازی ممکن است مشکلاتی ایجاد کند."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "در حال بارگذاری..."
@@ -111,14 +109,13 @@
     "Close": "بستن",
     "Decrease": "کاهش",
     "Disable": "غیرفعال کردن",
-    "Double Confirm Power Management": "Double Confirm Power Management",
-    "Double confirm power management": "Double confirm power management",
-    "Edit": "Edit",
+    "Double Confirm Power Management": "تایید دوباره مدیریت برق",
+    "Edit": "ویرایش",
     "Enable": "فعال کردن",
-    "Gamepad Autorepeat Delay": "Gamepad Autorepeat Delay",
+    "Gamepad Autorepeat Delay": "تأخیر تکرار خودکار گیم‌پد",
     "Increase": "افزایش",
-    "Keep Games Running On Quit": "Keep Games Running On Quit",
-    "Recently Played Shelf": "قفسه اخیرا بازی شده",
+    "Keep Games Running On Quit": "نگه داشتن بازی‌ها در حین خروج",
+    "Recently Played Shelf": "قفسه اخیراً بازی شده",
     "Settings": "تنظیمات",
     "Show Hidden Games": "نمایش بازی‌های پنهان",
     "Show Runner Icon": "Show Runner Icon",
@@ -128,7 +125,7 @@
   "components/SystemMenu.jsx": {
     "About": "درباره",
     "Are you sure you want to exit the application?": "آیا مطمئنید که می‌خواهید از برنامه خارج شوید؟",
-    "Are you sure you want to generate the bug report file?": "Are you sure you want to generate the bug report file?",
+    "Are you sure you want to generate the bug report file?": "آیا مطمئنید که می‌خواهید فایل گزارش اشکال را تولید کنید؟",
     "Are you sure you want to power off the system?": "آیا مطمئنید که می‌خواهید سامانه را خاموش کنید؟",
     "Are you sure you want to reboot the system?": "آیا مطمئنید که می‌خواهید سامانه را باز راه‌اندازی کنید؟",
     "Audio Settings": "تنظیمات صدا",
@@ -138,7 +135,7 @@
     "Continue with system power off?": "ادامه دادن به خاموش کردن سامانه؟",
     "Continue with system reboot?": "ادامه دادن به باز راه‌اندازی سامانه؟",
     "Exit Application": "خروج از برنامه",
-    "Generate Bug Report": "Generate Bug Report",
+    "Generate Bug Report": "تولید گزارش اشکال",
     "Open Lutris": "باز کردن لوتریس",
     "Power Off System": "خاموش‌کردن سامانه",
     "Reboot System": "باز راه‌اندازی سامانه",
@@ -153,10 +150,10 @@
     "Offline": "آفلاین"
   },
   "components/UpdateDialog.jsx": {
-    "A new version, {{version}}, is available for download.": "A new version, {{version}}, is available for download.",
-    "Go to Downloads": "Go to Downloads",
-    "Later": "Later",
-    "Update Available": "Update Available"
+    "A new version, {{version}}, is available for download.": "نسخه جدید {{version}} برای دانلود در دسترس است.",
+    "Go to Downloads": "رفتن به بخش دانلودها",
+    "Later": "بعداً",
+    "Update Available": "به‌روزرسانی در دسترس است"
   },
   "components/VolumeControl.jsx": {
     "Audio Settings": "تنظیمات صدا",

@@ -10,6 +10,7 @@ const defaultConfig = {
   doubleConfirmPowerManagement: true,
   gamepadAutorepeatMs: 225,
   useRemoteDesktopPortal: true,
+  accentColor: "#e50914",
   showRunnerIcon: true,
   keepGamesRunningOnQuit: false,
   accentColor: "#e50914",

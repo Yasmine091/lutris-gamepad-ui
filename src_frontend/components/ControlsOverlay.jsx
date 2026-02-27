@@ -10,8 +10,6 @@ const ControlsOverlay = ({
   onClearSearch,
   onShowSearchModal,
   onOpenSystemMenu,
-  onToggleGamePause,
-  isGamePaused,
   onPrevTab,
   onNextTab,
   onPrevShelf,
