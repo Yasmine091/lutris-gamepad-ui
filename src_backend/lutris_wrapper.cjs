@@ -7,7 +7,7 @@ async function invokeLutrisSubcommand(subcommandName, args = []) {
     const { stdout } = await invokeLutris(["--" + subcommandName, ...args]);
 
     const outputLine = stdout
-      .split("\r\n")
+      .split(/\r?\n/)
       .find((line) => line.startsWith(SUBCOMMAND_OUTPUT_HEADER));
 
     if (outputLine) {
@@ -28,7 +28,10 @@ async function invokeLutrisSubcommand(subcommandName, args = []) {
 }
 
 async function invokeLutris(args = []) {
-  return await execPromise(`bash ${getLutrisWrapperPath()} ${args.join(" ")}`);
+  const serializedArgs = args.map((arg) => JSON.stringify(String(arg))).join(" ");
+  return await execPromise(
+    `bash "${getLutrisWrapperPath()}" ${serializedArgs}`.trim()
+  );
 }
 
 async function getCoverartPath() {

@@ -677,6 +677,7 @@ const LibraryContainer = () => {
     controlsOverlayProps.onCloseRunningGame = closeRunningGameDialogCb;
     controlsOverlayProps.onToggleGamePause = toggleGamePauseCb;
     controlsOverlayProps.isGamePaused = isGamePaused;
+    controlsOverlayProps.runningGameTitle = runningGame.title;
   } else if (!isModalOpen) {
     if (focusedGame) {
       controlsOverlayProps.onLaunchGame = stableOnLaunchGame;

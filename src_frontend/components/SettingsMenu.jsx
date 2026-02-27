@@ -302,48 +302,6 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-case "ACCENT_COLOR":
-  return (
-    <FocusableRow
-      key={item.type}
-      isFocused={isFocused}
-      onMouseEnter={onMouseEnter}
-    >
-      <span className="settings-menu-label">{item.label}</span>
-
-      <input
-        type="color"
-        value={settings.accentColor || "#e50914"}
-        onChange={(e) => updateSetting("accentColor", e.target.value)}
-        style={{
-          width: 36,
-          height: 24,
-          padding: 0,
-          border: "none",
-          background: "none",
-          cursor: "pointer",
-        }}
-      />
-    </FocusableRow>
-  );
-
-        case "SHOW_RUNNER_ICON":
-          return (
-            <FocusableRow
-              key={item.type}
-              isFocused={isFocused}
-              onMouseEnter={onMouseEnter}
-              onClick={toggleShowRunnerIcon}
-            >
-              <span className="settings-menu-label">{item.label}</span>
-              <ToggleButton
-                isToggledOn={settings.showRunnerIcon}
-                labelOn={t("Disable")}
-                labelOff={t("Enable")}
-                onClick={toggleShowRunnerIcon}
-              />
-            </FocusableRow>
-          );
         case "ACCENT_COLOR":
           return (
             <FocusableRow
@@ -365,6 +323,23 @@ case "ACCENT_COLOR":
                   background: "none",
                   cursor: "pointer",
                 }}
+              />
+            </FocusableRow>
+          );
+        case "SHOW_RUNNER_ICON":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleShowRunnerIcon}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.showRunnerIcon}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleShowRunnerIcon}
               />
             </FocusableRow>
           );

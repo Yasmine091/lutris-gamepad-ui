@@ -23,8 +23,10 @@ function localeAppFile(name) {
     __dirname,
     path.join(__dirname, ".."),
     process.resourcesPath,
-    path.join(process.resourcesPath, "app.asar.unpacked"),
-  ];
+    process.resourcesPath
+      ? path.join(process.resourcesPath, "app.asar.unpacked")
+      : null,
+  ].filter((directory) => typeof directory === "string" && directory.length);
 
   for (const directory of DIRECTORIES) {
     const absolutePath = path.join(directory, name);
@@ -33,7 +35,7 @@ function localeAppFile(name) {
     }
   }
 
-  return new Error("unable to find: " + name);
+  throw new Error("unable to find: " + name);
 }
 
 function getLutrisWrapperPath() {
@@ -198,7 +200,9 @@ function getProcessDescendants(pid, visitedPids) {
 
     return childPids.concat(descendants);
   } catch (e) {
-    logError("Unable to read children of pid", pid, e);
+    if (e?.code !== "ENOENT" && e?.code !== "ESRCH") {
+      logError("Unable to read children of pid", pid, e);
+    }
     return [];
   }
 }

@@ -35,12 +35,15 @@
   "components/ControlsOverlay.jsx": {
     "Clear Search": "پاک‌کردن جستجو",
     "Force close": "بستن اجباری",
+    "Force close {{gameTitle}}": "Force close {{gameTitle}}",
     "Launch Game": "راه‌اندازی بازی",
+    "Next Shelf": "Next Shelf",
+    "Next Tab": "Next Tab",
     "Pause Game": "توقف بازی",
     "Power": "نیرو",
-    "Resume Game": "ادامه بازی",
     "Prev Shelf": "قفسه قبلی",
     "Prev Tab": "تب قبلی",
+    "Resume Game": "ادامه بازی",
     "Search": "جستجو",
     "Toggle Overlay": "تغییر نمای رویی",
     "game": "بازی"

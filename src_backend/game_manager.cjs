@@ -31,6 +31,93 @@ const {
 const { getAppConfig } = require("./config_manager.cjs");
 
 const runtimeIconCache = new Map();
+const FORCE_CLOSE_KILL_FALLBACK_MS = 1500;
+const PAUSE_STATE_RECHECK_DELAYS_MS = [120, 350];
+
+function sendMainWindowEvent(channel, ...args) {
+  const mainWindow = getMainWindow();
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  mainWindow.webContents.send(channel, ...args);
+}
+
+function getAliveProcessTreePids(rootPid) {
+  let descendants = [];
+
+  try {
+    descendants = getProcessDescendants(rootPid, new Set());
+  } catch (e) {
+    logError("Unable to enumerate descendants for pid", rootPid, e);
+  }
+
+  const uniquePids = [...new Set([rootPid, ...descendants])].filter(
+    (pid) => Number.isInteger(pid) && pid > 0,
+  );
+
+  return uniquePids.filter((pid) => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch (e) {
+      return e?.code === "EPERM";
+    }
+  });
+}
+
+function computePausedStateFromProcessTree(rootPid) {
+  const allPids = getAliveProcessTreePids(rootPid);
+  if (!allPids.length) {
+    return null;
+  }
+
+  let nonPausedCount = 0;
+  let pausedCount = 0;
+
+  for (const pid of allPids) {
+    try {
+      if (isProcessPaused(pid)) {
+        pausedCount += 1;
+      } else {
+        nonPausedCount += 1;
+      }
+    } catch (e) {
+      logWarn("Unable to determine paused state for pid", pid, e);
+      nonPausedCount += 1;
+    }
+  }
+
+  return pausedCount > 0 && nonPausedCount === 0;
+}
+
+function emitPauseStateForProcess(processRef) {
+  if (!processRef) return;
+
+  const paused = computePausedStateFromProcessTree(processRef.pid);
+  if (paused === null) return;
+
+  sendMainWindowEvent("game-pause-state-changed", paused);
+}
+
+function finalizeRunningGameProcessIfCurrent(processRef, reason) {
+  if (!processRef) return false;
+
+  const currentRunningProcess = getRunningGameProcess();
+  if (!currentRunningProcess || currentRunningProcess.pid !== processRef.pid) {
+    return false;
+  }
+
+  logWarn("Finalizing tracked running process:", processRef.pid, reason);
+  setRunningGameProcess(null);
+  sendMainWindowEvent("game-pause-state-changed", false);
+  sendMainWindowEvent("game-closed");
+
+  const mainWindow = getMainWindow();
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.show();
+  }
+
+  globalShortcut.unregister("CommandOrControl+X");
+  return true;
+}
 
 function findLutrisWrapperChildren(pid) {
   const allSubprocesses = getProcessDescendants(pid, new Set());
@@ -49,28 +136,30 @@ function closeRunningGameProcess() {
   const runningGameProcess = getRunningGameProcess();
   if (!runningGameProcess) return;
 
-  let isPaused;
-
-  try {
-    isPaused = isProcessPaused(runningGameProcess.pid);
-  } catch (e) {
-    logError("Unable to determine if pid", pid, "is paused, assume paused", e);
-    isPaused = true;
+  const currentPausedState = computePausedStateFromProcessTree(
+    runningGameProcess.pid,
+  );
+  if (currentPausedState === null) {
+    finalizeRunningGameProcessIfCurrent(
+      runningGameProcess,
+      "close requested but process tree is already gone",
+    );
+    return;
   }
+  const isPaused = currentPausedState;
 
   let pidsToStop;
 
   const getAllPids = () => {
-    const result = getProcessDescendants(runningGameProcess.pid, new Set());
-    result.push(runningGameProcess.pid);
-    return result;
+    return getAliveProcessTreePids(runningGameProcess.pid);
   };
 
   if (isPaused) {
     pidsToStop = getAllPids();
   } else {
     try {
-      pidsToStop = findLutrisWrapperChildren(runningGameProcess.pid);
+      const wrapperChildren = findLutrisWrapperChildren(runningGameProcess.pid);
+      pidsToStop = [...new Set([runningGameProcess.pid, ...wrapperChildren])];
     } catch (e) {
       logError("Unable to find lutris wrapper child", e);
     }
@@ -97,7 +186,36 @@ function closeRunningGameProcess() {
     }
   });
 
-  runningGameProcess.stdin.end();
+  if (!isPaused) {
+    setTimeout(() => {
+      const latestProcess = getRunningGameProcess();
+      if (!latestProcess || latestProcess.pid !== runningGameProcess.pid) return;
+
+      const alivePids = getAllPids();
+      if (!alivePids.length) {
+        finalizeRunningGameProcessIfCurrent(
+          runningGameProcess,
+          "force-close fallback found no alive pids",
+        );
+        return;
+      }
+
+      alivePids.forEach((pid) => {
+        try {
+          logWarn("Fallback SIGKILL to pid", pid);
+          process.kill(pid, "SIGKILL");
+        } catch (e) {
+          logError("Unable to send fallback SIGKILL to pid", pid, e);
+        }
+      });
+    }, FORCE_CLOSE_KILL_FALLBACK_MS);
+  }
+
+  try {
+    runningGameProcess.stdin.end();
+  } catch (e) {
+    logWarn("Unable to close stdin of running process", e);
+  }
 }
 
 async function getGames() {
@@ -212,41 +330,38 @@ function toggleGamePause(opts) {
   const runningGameProcess = getRunningGameProcess();
   if (!runningGameProcess) return;
 
-  let isGamePaused;
-
-  try {
-    isGamePaused = isProcessPaused(runningGameProcess.pid);
-  } catch (e) {
-    logError("Unable to determine if process is paused", e);
-    isGamePaused = true;
+  const currentPausedState = computePausedStateFromProcessTree(
+    runningGameProcess.pid,
+  );
+  if (currentPausedState === null) {
+    finalizeRunningGameProcessIfCurrent(
+      runningGameProcess,
+      "pause requested but process tree is no longer alive",
+    );
+    return;
   }
 
   switch (opts?.forceStatus) {
     case "running": {
-      if (!isGamePaused) return;
+      if (!currentPausedState) return;
       break;
     }
 
     case "paused": {
-      if (isGamePaused) return;
+      if (currentPausedState) return;
       break;
     }
   }
 
-  let allProcesses;
-
-  try {
-    allProcesses = getProcessDescendants(runningGameProcess.pid, new Set());
-  } catch (e) {
-    logError("Unable to find game subprocesses", e);
+  const allProcesses = getAliveProcessTreePids(runningGameProcess.pid);
+  if (!allProcesses.length) {
+    logWarn("Unable to toggle pause, process tree is empty");
     return;
   }
 
-  allProcesses.push(runningGameProcess.pid);
-
   let signal;
 
-  if (isGamePaused) {
+  if (currentPausedState) {
     signal = "SIGCONT";
   } else {
     signal = "SIGSTOP";
@@ -261,10 +376,15 @@ function toggleGamePause(opts) {
     }
   });
 
-  const mainWindow = getMainWindow();
-  if (mainWindow) {
-    mainWindow.webContents.send("game-pause-state-changed", !isGamePaused);
-  }
+  sendMainWindowEvent("game-pause-state-changed", !currentPausedState);
+
+  PAUSE_STATE_RECHECK_DELAYS_MS.forEach((delayMs) => {
+    setTimeout(() => {
+      const latestProcess = getRunningGameProcess();
+      if (!latestProcess || latestProcess.pid !== runningGameProcess.pid) return;
+      emitPauseStateForProcess(latestProcess);
+    }, delayMs);
+  });
 }
 
 function launchGame(gameId) {
@@ -300,25 +420,22 @@ function launchGame(gameId) {
 
   setRunningGameProcess(newGameProcess);
 
-  const mainWindow = getMainWindow();
-  if (mainWindow) {
-    mainWindow.webContents.send("game-started", gameId);
-  }
+  sendMainWindowEvent("game-started", gameId);
+  sendMainWindowEvent("game-pause-state-changed", false);
 
   globalShortcut.register("CommandOrControl+X", toggleWindowShow);
 
+  let hasClosed = false;
   const onGameClosed = () => {
-    setRunningGameProcess(null);
-    if (mainWindow) {
-      mainWindow.webContents.send("game-closed");
-      mainWindow.show();
-    }
-    globalShortcut.unregister("CommandOrControl+X");
+    if (hasClosed) return;
+    hasClosed = true;
+
+    finalizeRunningGameProcessIfCurrent(newGameProcess, "child process closed");
   };
 
-  newGameProcess.on("close", onGameClosed);
+  newGameProcess.once("close", onGameClosed);
 
-  newGameProcess.on("error", (e) => {
+  newGameProcess.once("error", (e) => {
     logError("game process error:", e);
 
     const gameCloseTime = Date.now();

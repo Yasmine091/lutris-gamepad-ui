@@ -35,12 +35,15 @@
   "components/ControlsOverlay.jsx": {
     "Clear Search": "Annulla ricerca",
     "Force close": "Forza chiusura di",
+    "Force close {{gameTitle}}": "Force close {{gameTitle}}",
     "Launch Game": "Avvia gioco",
     "Next Shelf": "Prossima Scaffale",
     "Next Tab": "Prossima Scheda",
+    "Pause Game": "Pause Game",
     "Power": "Menu di sistema",
     "Prev Shelf": "Scaffale Precedente",
     "Prev Tab": "Scheda Precedente",
+    "Resume Game": "Resume Game",
     "Search": "Cerca",
     "Toggle Overlay": "Visualizza overlay",
     "game": "gioco"

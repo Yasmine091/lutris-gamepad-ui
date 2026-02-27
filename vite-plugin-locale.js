@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, writeFileSync, existsSync } from "fs";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
 import path, { relative } from "path";
 import { fileURLToPath } from "url";
 import * as babel from "@babel/core";
@@ -31,7 +31,7 @@ export function createLocalePlugins() {
       __dirname,
       "src_frontend/locale/locale.en.json"
     ),
-    viteServer: null,
+    isBulkScan: false,
   };
 
   function generateMasterLocaleObject() {
@@ -60,15 +60,22 @@ export function createLocalePlugins() {
   }
 
   function writeLocaleFile(localeObject, filename) {
-    writeFileSync(
-      filename,
-      JSON.stringify(sortLocaleObject(localeObject), null, 2) + "\n"
-    );
+    const nextContent =
+      JSON.stringify(sortLocaleObject(localeObject), null, 2) + "\n";
+    const previousContent = readFileSync(filename, "utf-8");
+    if (previousContent === nextContent) {
+      return false;
+    }
+    writeFileSync(filename, nextContent);
+    return true;
   }
 
   function updateAllLocaleFiles() {
+    let hasChanges = false;
     const masterLocaleObject = generateMasterLocaleObject();
-    writeLocaleFile(masterLocaleObject, pluginState.masterLocaleFile);
+    hasChanges =
+      writeLocaleFile(masterLocaleObject, pluginState.masterLocaleFile) ||
+      hasChanges;
 
     const localeDir = path.dirname(pluginState.masterLocaleFile);
 
@@ -109,12 +116,11 @@ export function createLocalePlugins() {
         }
       }
 
-      writeLocaleFile(combinedContent, localeFilePath);
+      hasChanges =
+        writeLocaleFile(combinedContent, localeFilePath) || hasChanges;
     }
 
-    if (pluginState.viteServer) {
-      pluginState.viteServer.ws.send({ type: "full-reload", path: "*" });
-    }
+    return hasChanges;
   }
 
   const areSetsEqual = (a, b) =>
@@ -169,7 +175,9 @@ export function createLocalePlugins() {
           } else {
             pluginState.translationKeysByFile.delete(filename);
           }
-          updateAllLocaleFiles();
+          if (!pluginState.isBulkScan) {
+            updateAllLocaleFiles();
+          }
         }
       },
     };
@@ -177,21 +185,27 @@ export function createLocalePlugins() {
 
   const vitePluginOrchestrator = {
     name: "vite-plugin-locale-orchestrator",
-    configureServer(server) {
-      pluginState.viteServer = server;
-    },
     buildStart() {
       pluginState.translationKeysByFile.clear();
       try {
-        const allFiles = readdirSync(pluginState.frontendSrcDir, {
-          recursive: true,
-          withFileTypes: true,
-        });
+        const filesToScan = [];
+        const directories = [pluginState.frontendSrcDir];
+        while (directories.length > 0) {
+          const currentDir = directories.pop();
+          const entries = readdirSync(currentDir, { withFileTypes: true });
+          for (const entry of entries) {
+            const entryPath = path.join(currentDir, entry.name);
+            if (entry.isDirectory()) {
+              directories.push(entryPath);
+              continue;
+            }
+            if (entry.isFile() && entry.name.endsWith(".jsx")) {
+              filesToScan.push(entryPath);
+            }
+          }
+        }
 
-        const filesToScan = allFiles
-          .filter((dirent) => dirent.isFile() && dirent.name.endsWith(".jsx"))
-          .map((dirent) => path.join(dirent.parentPath, dirent.name));
-
+        pluginState.isBulkScan = true;
         filesToScan.forEach((file) => {
           const content = readFileSync(file, "utf-8");
           babel.transformSync(content, {
@@ -202,9 +216,11 @@ export function createLocalePlugins() {
             ],
           });
         });
+        pluginState.isBulkScan = false;
 
         updateAllLocaleFiles();
       } catch (error) {
+        pluginState.isBulkScan = false;
         console.error("[locale-plugin] Initial scan failed:", error);
       }
     },
