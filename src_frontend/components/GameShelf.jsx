@@ -94,9 +94,9 @@ const GameShelf = ({
               onClick={() => onCardClick(featuredGame)}
             >
               <div className="hero-featured-backdrop">
-                {featuredGame.bannerPath || featuredGame.coverPath ? (
+                {featuredGame.coverPath ? (
                   <img
-                    src={`app://${featuredGame.bannerPath || featuredGame.coverPath}`}
+                    src={`app://${featuredGame.coverPath}`}
                     alt=""
                     className="hero-featured-backdrop-image"
                   />
@@ -150,14 +150,6 @@ const GameShelf = ({
                         </span>
                         <strong className="hero-featured-stat-value">
                           {featuredCategory}
-                        </strong>
-                      </div>
-                      <div className="hero-featured-stat-row">
-                        <span className="hero-featured-stat-label">
-                          {t("Release year")}:
-                        </span>
-                        <strong className="hero-featured-stat-value">
-                          {featuredReleaseYear}
                         </strong>
                       </div>
                       <div className="hero-featured-stat-row">
