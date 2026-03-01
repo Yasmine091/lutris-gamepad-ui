@@ -38,11 +38,9 @@
     "Launch Game": "Launch Game",
     "Next Shelf": "Next Shelf",
     "Next Tab": "Next Tab",
-    "Pause Game": "Pause Game",
     "Power": "Power",
     "Prev Shelf": "Prev Shelf",
     "Prev Tab": "Prev Tab",
-    "Resume Game": "Resume Game",
     "Search": "Search",
     "Toggle Overlay": "Toggle Overlay",
     "game": "game"
@@ -64,6 +62,7 @@
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Last played: {{date}}",
     "Never": "Never",
+    "Paused": "Paused",
     "Playtime: {{playtime}}": "Playtime: {{playtime}}",
     "Running": "Running"
   },
@@ -81,10 +80,10 @@
     "Last played": "Last played",
     "Launch Game": "Launch Game",
     "Never": "Never",
-    "Pause Game": "Pause Game",
+    "Paused": "Paused",
     "Platform": "Platform",
     "Playtime": "Playtime",
-    "Resume Game": "Resume Game",
+    "Release year": "Release year",
     "Running": "Running",
     "Uncategorized": "Uncategorized",
     "Unknown": "Unknown"
@@ -92,13 +91,11 @@
   "components/LibraryContainer.jsx": {
     "All Games": "All Games",
     "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
-    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
     "Loading library...": "Loading library...",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\"",
     "Search Library": "Search Library",
-    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
-    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
+    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Loading..."

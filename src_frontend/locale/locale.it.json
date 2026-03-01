@@ -65,6 +65,7 @@
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Ultimo avvio: {{date}}",
     "Never": "Mai giocato",
+    "Paused": "Paused",
     "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}",
     "Running": "Running"
   },
@@ -85,6 +86,7 @@
     "Never": "Never",
     "Next": "Next",
     "Pause Game": "Pause Game",
+    "Paused": "Paused",
     "Platform": "Platform",
     "Playtime": "Playtime",
     "Playtime: {{playtime}}": "Playtime: {{playtime}}",

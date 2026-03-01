@@ -6,7 +6,7 @@ import LoadingIndicator from "./LoadingIndicator";
 import ControlsOverlay from "./ControlsOverlay";
 import OnScreenKeyboard from "./OnScreenKeyboard";
 import { playActionSound } from "../utils/sound";
-import { toggleGamePause, toggleWindowShow } from "../utils/ipc";
+import { toggleWindowShow } from "../utils/ipc";
 import ConfirmationDialog from "./ConfirmationDialog";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
@@ -22,7 +22,6 @@ const LibraryContainer = () => {
     games,
     loading,
     runningGame,
-    isGamePaused,
     launchGame,
     closeRunningGame,
   } = useLutris();
@@ -79,6 +78,7 @@ const LibraryContainer = () => {
       .map((g) => ({
         ...g,
         isRunning: runningGameIds.has(Number(g.id)),
+        isPaused: false,
       }));
   }, [searchQuery, settings, games, runningGameIds]);
 
@@ -199,6 +199,7 @@ const LibraryContainer = () => {
           };
 
     const result = [];
+    const shouldShowRecentlyPlayed = settings.showRecentlyPlayed !== false;
     const recentlyPlayedGames = sortByLastPlayed(currentGames)
       .filter((game) => !!game.lastPlayed)
       .slice(0, 6);
@@ -212,7 +213,7 @@ const LibraryContainer = () => {
           ? mostPlayedFallback
           : allGamesSorted.slice(0, 6);
 
-    if (heroGames.length > 0) {
+    if (shouldShowRecentlyPlayed && heroGames.length > 0) {
       result.push({
         id: "hero-recently-played",
         title: t("Recently Played"),
@@ -223,7 +224,7 @@ const LibraryContainer = () => {
 
     result.push(selectedMainShelf);
     return result;
-  }, [currentGames, searchQuery, t, activeTabId]);
+  }, [currentGames, searchQuery, t, activeTabId, settings.showRecentlyPlayed]);
 
   const shelvesRef = useRef(shelves);
   const focusCoordsRef = useRef(focusCoords);
@@ -362,9 +363,8 @@ const LibraryContainer = () => {
   );
 
   const isFocusedGameRunning = useMemo(
-    () =>
-      !!runningGame && !!focusedGame && Number(runningGame.id) === Number(focusedGame.id),
-    [runningGame, focusedGame],
+    () => !!focusedGame && runningGameIds.has(Number(focusedGame.id)),
+    [runningGameIds, focusedGame],
   );
 
   const showSearchModalCb = useCallback(() => {
@@ -391,39 +391,6 @@ const LibraryContainer = () => {
       gameCloseCloseModalRef.current = null;
     }
   }, [runningGame, gameCloseCloseModalRef]);
-
-  const toggleGamePauseCb = useCallback(() => {
-    if (!runningGame) {
-      return;
-    }
-    if (gameCloseCloseModalRef.current) {
-      gameCloseCloseModalRef.current();
-      gameCloseCloseModalRef.current = null;
-    }
-
-    if (!isGamePaused) {
-      showModal((hideThisModal) => {
-        gameCloseCloseModalRef.current = hideThisModal;
-        return (
-          <ConfirmationDialog
-            message={t("Are you sure you want to pause\n{{title}}?", {
-              title: runningGame.title,
-            })}
-            description={t(
-              "This feature is experimental. Pausing the game may cause issues.",
-            )}
-            onConfirm={() => {
-              toggleGamePause();
-              hideThisModal();
-            }}
-            onDeny={hideThisModal}
-          />
-        );
-      });
-    } else {
-      toggleGamePause();
-    }
-  }, [runningGame, isGamePaused, t, showModal]);
 
   const closeRunningGameDialogCb = useCallback(() => {
     if (!runningGame) {
@@ -663,13 +630,8 @@ const LibraryContainer = () => {
           }
           break;
         case "X":
-          if (focusedIsRunning) {
-            playActionSound();
-            toggleGamePauseCb();
-          } else {
-            playActionSound();
-            showSearchModalCb();
-          }
+          playActionSound();
+          showSearchModalCb();
           break;
       }
     },
@@ -681,7 +643,6 @@ const LibraryContainer = () => {
       tabs,
       handleLaunchGame,
       closeRunningGameDialogCb,
-      toggleGamePauseCb,
       clearSearchCb,
       showSearchModalCb,
       handlePrevShelf,
@@ -731,8 +692,6 @@ const LibraryContainer = () => {
 
   if (!isModalOpen && isFocusedGameRunning) {
     controlsOverlayProps.onCloseRunningGame = closeRunningGameDialogCb;
-    controlsOverlayProps.onToggleGamePause = toggleGamePauseCb;
-    controlsOverlayProps.isGamePaused = isGamePaused;
     controlsOverlayProps.runningGameTitle = focusedGame?.title || runningGame?.title;
   } else if (!isModalOpen) {
     if (focusedGame && !runningGame) {
@@ -769,8 +728,7 @@ const LibraryContainer = () => {
         focusCoords={focusCoords}
         heroFeaturedGame={focusedGame || runningGame || null}
         heroIsRunning={isFocusedGameRunning}
-        isGamePaused={isGamePaused}
-        onHeroPauseResume={toggleGamePauseCb}
+        heroIsPaused={false}
         onHeroForceClose={closeRunningGameDialogCb}
         showTabs={!searchQuery}
       />

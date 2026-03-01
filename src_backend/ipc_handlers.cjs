@@ -9,7 +9,6 @@ const {
   getGames,
   launchGame,
   closeRunningGameProcess,
-  toggleGamePause,
 } = require("./game_manager.cjs");
 const {
   getBluetoothState,
@@ -70,10 +69,6 @@ const ipcOnWithError = (channel, listener) => {
 function registerIpcHandlers() {
   ipcHandleWithError("get-games", async () => {
     return await getGames();
-  });
-
-  ipcOnWithError("toggle-game-pause", async () => {
-    toggleGamePause();
   });
 
   ipcOnWithError("launch-game", async (_event, gameId) => {

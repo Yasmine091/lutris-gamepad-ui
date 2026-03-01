@@ -6,8 +6,6 @@ import LegendaContainer from "./LegendaContainer";
 const ControlsOverlay = ({
   children,
   onCloseRunningGame,
-  onToggleGamePause,
-  isGamePaused,
   runningGameTitle,
   onLaunchGame,
   onClearSearch,
@@ -30,13 +28,6 @@ const ControlsOverlay = ({
         gameTitle: runningGameTitle || t("game"),
       }),
     });
-    if (onToggleGamePause) {
-      legendItems.push({
-        button: "X",
-        onClick: onToggleGamePause,
-        label: isGamePaused ? t("Resume Game") : t("Pause Game"),
-      });
-    }
   }
 
   if (onLaunchGame) {

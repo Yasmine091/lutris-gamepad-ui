@@ -1,6 +1,6 @@
 const { exec } = require("child_process");
 const { promisify } = require("util");
-const { existsSync } = require("fs");
+const { existsSync, readdirSync } = require("fs");
 const path = require("node:path");
 const { cwd } = require("node:process");
 
@@ -207,6 +207,163 @@ function getProcessDescendants(pid, visitedPids) {
   }
 }
 
+function getProcessGroupId(pid) {
+  try {
+    const statFile = readFileSync(`/proc/${pid}/stat`, "utf8").trim();
+    const lastParenIndex = statFile.lastIndexOf(")");
+    if (lastParenIndex < 0) {
+      return null;
+    }
+
+    // After "<pid> (<comm>)" fields are: state ppid pgrp ...
+    const fieldsAfterComm = statFile.slice(lastParenIndex + 2).trim().split(/\s+/);
+    const processGroupId = Number(fieldsAfterComm[2]);
+    if (!Number.isInteger(processGroupId) || processGroupId <= 0) {
+      return null;
+    }
+    return processGroupId;
+  } catch (e) {
+    if (e?.code !== "ENOENT" && e?.code !== "ESRCH" && e?.code !== "EACCES") {
+      logWarn("Unable to read process group for pid", pid, e);
+    }
+    return null;
+  }
+}
+
+function getProcessGroupMembers(processGroupId) {
+  if (!Number.isInteger(processGroupId) || processGroupId <= 0) {
+    return [];
+  }
+
+  const members = [];
+  let entries = [];
+
+  try {
+    entries = readdirSync("/proc");
+  } catch (e) {
+    logError("Unable to list /proc entries while reading process groups", e);
+    return [];
+  }
+
+  for (const entry of entries) {
+    if (!/^\d+$/.test(entry)) continue;
+    const pid = Number(entry);
+    if (!Number.isInteger(pid) || pid <= 0) continue;
+
+    const pidGroupId = getProcessGroupId(pid);
+    if (pidGroupId === processGroupId) {
+      members.push(pid);
+    }
+  }
+
+  return members;
+}
+
+function getProcessEnvironment(pid) {
+  try {
+    const environRaw = readFileSync(`/proc/${pid}/environ`, "utf8");
+    if (!environRaw || !environRaw.includes("=")) {
+      return {};
+    }
+
+    const result = {};
+    environRaw.split("\x00").forEach((entry) => {
+      const eqIndex = entry.indexOf("=");
+      if (eqIndex <= 0) return;
+      const key = entry.slice(0, eqIndex);
+      const value = entry.slice(eqIndex + 1);
+      if (key) result[key] = value;
+    });
+    return result;
+  } catch (e) {
+    if (e?.code !== "ENOENT" && e?.code !== "ESRCH" && e?.code !== "EACCES") {
+      logWarn("Unable to read process environment for pid", pid, e);
+    }
+    return {};
+  }
+}
+
+function getProcessEnvironmentValue(pid, key) {
+  if (!key) return null;
+  const env = getProcessEnvironment(pid);
+  if (!Object.hasOwn(env, key)) return null;
+  return env[key];
+}
+
+function getPidsByEnvironmentValue(key, expectedValue = null) {
+  if (!key) return [];
+
+  let entries = [];
+  try {
+    entries = readdirSync("/proc");
+  } catch (e) {
+    logError("Unable to list /proc entries while scanning environments", e);
+    return [];
+  }
+
+  const pids = [];
+  for (const entry of entries) {
+    if (!/^\d+$/.test(entry)) continue;
+    const pid = Number(entry);
+    if (!Number.isInteger(pid) || pid <= 0) continue;
+
+    const actualValue = getProcessEnvironmentValue(pid, key);
+    if (actualValue === null) continue;
+    if (expectedValue !== null && actualValue !== expectedValue) continue;
+    pids.push(pid);
+  }
+
+  return pids;
+}
+
+function getProcessCommandLine(pid) {
+  try {
+    const cmdlineRaw = readFileSync(`/proc/${pid}/cmdline`, "utf8");
+    if (!cmdlineRaw) return "";
+    return cmdlineRaw.replace(/\x00/g, " ").trim();
+  } catch (e) {
+    if (e?.code !== "ENOENT" && e?.code !== "ESRCH" && e?.code !== "EACCES") {
+      logWarn("Unable to read command line for pid", pid, e);
+    }
+    return "";
+  }
+}
+
+function getPidsByCommandLinePatterns(patterns = []) {
+  const normalizedPatterns = [...new Set(
+    (patterns || [])
+      .map((pattern) => String(pattern || "").toLowerCase().trim())
+      .filter((pattern) => pattern.length >= 4),
+  )];
+  if (!normalizedPatterns.length) {
+    return [];
+  }
+
+  let entries = [];
+  try {
+    entries = readdirSync("/proc");
+  } catch (e) {
+    logError("Unable to list /proc entries while scanning cmdline", e);
+    return [];
+  }
+
+  const matched = [];
+  for (const entry of entries) {
+    if (!/^\d+$/.test(entry)) continue;
+    const pid = Number(entry);
+    if (!Number.isInteger(pid) || pid <= 0) continue;
+
+    const cmdline = getProcessCommandLine(pid).toLowerCase();
+    if (!cmdline) continue;
+
+    if (normalizedPatterns.some((pattern) => cmdline.includes(pattern))) {
+      matched.push(pid);
+    }
+  }
+
+  return matched;
+}
+
 module.exports = {
   isDev,
   forceWindowed,
@@ -224,5 +381,10 @@ module.exports = {
   rebootPc,
   powerOffPc,
   getProcessDescendants,
+  getProcessGroupMembers,
+  getProcessEnvironmentValue,
+  getPidsByEnvironmentValue,
+  getProcessCommandLine,
+  getPidsByCommandLinePatterns,
   isProcessPaused,
 };

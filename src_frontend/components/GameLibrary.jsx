@@ -18,8 +18,7 @@ const GameLibrary = ({
   focusCoords,
   heroFeaturedGame,
   heroIsRunning = false,
-  isGamePaused = false,
-  onHeroPauseResume,
+  heroIsPaused = false,
   onHeroForceClose,
   showTabs = true,
 }) => {
@@ -49,8 +48,7 @@ const GameLibrary = ({
               focusedCardIndex={focusCoords?.shelf === 0 ? focusCoords.card : 0}
               featuredGame={heroFeaturedGame}
               isFeaturedRunning={heroIsRunning}
-              isGamePaused={isGamePaused}
-              onRequestPauseResume={onHeroPauseResume}
+              isFeaturedPaused={heroIsPaused}
               onRequestForceClose={onHeroForceClose}
               setCardRef={setCardRef}
               setShelfRef={setShelfRef}

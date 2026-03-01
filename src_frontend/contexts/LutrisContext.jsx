@@ -95,8 +95,11 @@ export const LutrisProvider = ({ children }) => {
   const [isGamePaused, setIsGamePaused] = useState(false);
   const isMounted = useIsMounted();
 
-  const fetchGames = useCallback(async () => {
-    setLoading(true);
+  const fetchGames = useCallback(async (options = {}) => {
+    const { silent = false } = options;
+    if (!silent) {
+      setLoading(true);
+    }
     try {
       const allGames = await ipc.getGames();
 
@@ -121,7 +124,7 @@ export const LutrisProvider = ({ children }) => {
     } catch (error) {
       ipc.logError("Error fetching games in context:", error);
     } finally {
-      if (isMounted()) {
+      if (isMounted() && !silent) {
         setLoading(false);
       }
     }
@@ -132,6 +135,15 @@ export const LutrisProvider = ({ children }) => {
   }, [fetchGames]);
 
   useEffect(() => {
+    const pendingRefreshTimers = new Set();
+    const scheduleSilentRefresh = (delayMs) => {
+      const timerId = setTimeout(() => {
+        pendingRefreshTimers.delete(timerId);
+        fetchGames({ silent: true });
+      }, delayMs);
+      pendingRefreshTimers.add(timerId);
+    };
+
     const handleGameStarted = (gameId) => {
       ipc.logInfo(`[IPC] Received game-started for ID: ${gameId}`);
       const game = games.find((g) => g.id === gameId);
@@ -145,7 +157,10 @@ export const LutrisProvider = ({ children }) => {
       ipc.logInfo("[IPC] Received game-closed");
       setRunningGame(null);
       setIsGamePaused(false);
-      fetchGames();
+      // Refresh in background so close remains snappy while playtime/last played
+      // catches up as Lutris writes metadata.
+      scheduleSilentRefresh(80);
+      scheduleSilentRefresh(1500);
     };
 
     const handleGamePauseStateChanged = (paused) => {
@@ -162,6 +177,8 @@ export const LutrisProvider = ({ children }) => {
       unsubscribeOnGameStarted();
       unsubscribeOnGameClosed();
       unsubscribeOnGamePauseStateChanged();
+      pendingRefreshTimers.forEach((timerId) => clearTimeout(timerId));
+      pendingRefreshTimers.clear();
     };
   }, [games, fetchGames]);
 

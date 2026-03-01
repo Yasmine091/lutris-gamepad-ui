@@ -6,7 +6,17 @@ import { useTranslation } from "../contexts/TranslationContext";
 import { useSettingsState } from "../contexts/SettingsContext";
 
 const GameCard = React.forwardRef(
-  ({ game, variant = "default", isRunning = false, onFocus, onClick }, ref) => {
+  (
+    {
+      game,
+      variant = "default",
+      isRunning = false,
+      isPaused = false,
+      onFocus,
+      onClick,
+    },
+    ref,
+  ) => {
     const { t } = useTranslation();
     const { settings } = useSettingsState();
     const isHeroVariant = variant === "hero";
@@ -34,9 +44,11 @@ const GameCard = React.forwardRef(
 
         {isRunning && (
           <div
-            className="game-card-running-indicator"
-            aria-label={t("Running")}
-            title={t("Running")}
+            className={`game-card-running-indicator ${
+              isPaused ? "is-paused" : "is-running"
+            }`}
+            aria-label={isPaused ? t("Paused") : t("Running")}
+            title={isPaused ? t("Paused") : t("Running")}
           />
         )}
 

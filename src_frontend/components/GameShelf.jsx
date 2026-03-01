@@ -12,8 +12,7 @@ const GameShelf = ({
   focusedCardIndex = 0,
   featuredGame: featuredGameOverride = null,
   isFeaturedRunning = false,
-  isGamePaused = false,
-  onRequestPauseResume,
+  isFeaturedPaused = false,
   onRequestForceClose,
   shelfIndex,
   setCardRef,
@@ -124,7 +123,13 @@ const GameShelf = ({
                     <div className="hero-featured-title-row">
                       <h3>{featuredGame.title}</h3>
                       {isFeaturedRunning && (
-                        <span className="hero-running-badge">{t("Running")}</span>
+                        <span
+                          className={`hero-running-badge ${
+                            isFeaturedPaused ? "is-paused" : "is-running"
+                          }`}
+                        >
+                          {isFeaturedPaused ? t("Paused") : t("Running")}
+                        </span>
                       )}
                     </div>
                     <div className="hero-featured-stats">
@@ -150,6 +155,14 @@ const GameShelf = ({
                         </span>
                         <strong className="hero-featured-stat-value">
                           {featuredCategory}
+                        </strong>
+                      </div>
+                      <div className="hero-featured-stat-row">
+                        <span className="hero-featured-stat-label">
+                          {t("Release year")}:
+                        </span>
+                        <strong className="hero-featured-stat-value">
+                          {featuredReleaseYear}
                         </strong>
                       </div>
                       <div className="hero-featured-stat-row">
@@ -184,16 +197,6 @@ const GameShelf = ({
                     )}
                     {isFeaturedRunning && (
                       <>
-                        <button
-                          type="button"
-                          className="hero-featured-action-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onRequestPauseResume?.();
-                          }}
-                        >
-                          {isGamePaused ? t("Resume Game") : t("Pause Game")}
-                        </button>
                         <button
                           type="button"
                           className="hero-featured-action-btn danger"
@@ -234,6 +237,7 @@ const GameShelf = ({
                   game={game}
                   variant="hero"
                   isRunning={!!game.isRunning}
+                  isPaused={!!game.isPaused}
                   onFocus={() => onCardFocus({ shelf: shelfIndex, card: cardIndex })}
                   onClick={() => onCardClick(game)}
                 />
@@ -262,6 +266,7 @@ const GameShelf = ({
               game={game}
               variant="default"
               isRunning={!!game.isRunning}
+              isPaused={!!game.isPaused}
               onFocus={() => onCardFocus({ shelf: shelfIndex, card: cardIndex })}
               onClick={() => onCardClick(game)}
             />
