@@ -14,6 +14,7 @@ const GameShelf = ({
   isFeaturedRunning = false,
   isFeaturedPaused = false,
   onRequestForceClose,
+  onRequestShowSettings,
   shelfIndex,
   setCardRef,
   setShelfRef,
@@ -183,6 +184,18 @@ const GameShelf = ({
                     </div>
                   </div>
                   <div className="hero-featured-actions">
+                    {!!featuredGame?.slug && (
+                      <button
+                        type="button"
+                        className="hero-featured-action-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRequestShowSettings?.();
+                        }}
+                      >
+                        {t("Game Settings")}
+                      </button>
+                    )}
                     {!isFeaturedRunning && (
                       <button
                         type="button"
@@ -196,18 +209,16 @@ const GameShelf = ({
                       </button>
                     )}
                     {isFeaturedRunning && (
-                      <>
-                        <button
-                          type="button"
-                          className="hero-featured-action-btn danger"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onRequestForceClose?.();
-                          }}
-                        >
-                          {t("Force close")}
-                        </button>
-                      </>
+                      <button
+                        type="button"
+                        className="hero-featured-action-btn danger"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRequestForceClose?.();
+                        }}
+                      >
+                        {t("Force close")}
+                      </button>
                     )}
                   </div>
                 </div>

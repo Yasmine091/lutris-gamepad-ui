@@ -20,6 +20,7 @@ const GameLibrary = ({
   heroIsRunning = false,
   heroIsPaused = false,
   onHeroForceClose,
+  onHeroShowSettings,
   showTabs = true,
 }) => {
   const { t } = useTranslation();
@@ -50,6 +51,7 @@ const GameLibrary = ({
               isFeaturedRunning={heroIsRunning}
               isFeaturedPaused={heroIsPaused}
               onRequestForceClose={onHeroForceClose}
+              onRequestShowSettings={onHeroShowSettings}
               setCardRef={setCardRef}
               setShelfRef={setShelfRef}
               setGridRef={setGridRef}

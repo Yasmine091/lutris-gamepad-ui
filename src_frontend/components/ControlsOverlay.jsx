@@ -7,6 +7,7 @@ const ControlsOverlay = ({
   children,
   onCloseRunningGame,
   runningGameTitle,
+  onShowGameSettings,
   onLaunchGame,
   onClearSearch,
   onShowSearchModal,
@@ -54,6 +55,14 @@ const ControlsOverlay = ({
     });
   }
 
+  if (onShowGameSettings) {
+    legendItems.push({
+      button: "Y",
+      label: t("Game Settings"),
+      onClick: onShowGameSettings,
+    });
+  }
+
   if (onPrevTab) {
     legendItems.push({
       button: "L2",
@@ -88,7 +97,7 @@ const ControlsOverlay = ({
 
   if (onOpenSystemMenu) {
     legendItems.push({
-      button: "Y",
+      button: "Start",
       label: t("Power"),
       onClick: onOpenSystemMenu,
     });

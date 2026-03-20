@@ -35,6 +35,7 @@
   "components/ControlsOverlay.jsx": {
     "Clear Search": "Clear Search",
     "Force close {{gameTitle}}": "Force close {{gameTitle}}",
+    "Game Settings": "Game Settings",
     "Launch Game": "Launch Game",
     "Next Shelf": "Next Shelf",
     "Next Tab": "Next Tab",
@@ -93,6 +94,7 @@
   "components/GameShelf.jsx": {
     "Category": "Category",
     "Force close": "Force close",
+    "Game Settings": "Game Settings",
     "Last played": "Last played",
     "Launch Game": "Launch Game",
     "Never": "Never",

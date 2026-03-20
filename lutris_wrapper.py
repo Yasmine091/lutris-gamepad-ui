@@ -6,26 +6,14 @@ import sys
 import typing
 from inspect import signature
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__import__("lutris").__file__)))
-
 import gi
 
 gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk
-from lutris import settings, sysoptions
-from lutris.config import LutrisConfig
+from lutris import settings
 from lutris.database import categories, games
-from lutris.database.games import get_game_by_field
 from lutris.gui.widgets.utils import get_runtime_icon_path
-from lutris.runners import import_runner
-from lutris.startup import init_lutris
-from lutris.runners import get_installed as get_installed_runners
-
-try:
-    from lutris.runners import InvalidRunnerError
-except ImportError:
-    from lutris.runners import InvalidRunner as InvalidRunnerError
 
 SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:"
 
@@ -33,6 +21,27 @@ SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:"
 def _print_subcommand_output(json_serializable: typing.Any):
     data = json.dumps(json_serializable, ensure_ascii=True)
     print("\r\n" + SUBCOMMAND_OUTPUT_HEADER + data, end="\r\n")
+
+
+def ensure_lutris_runtime_paths():
+    """Make Lutris runtime imports resolve Flatpak wrapper and data paths."""
+    flatpak_wrapper_path = "/app/share/lutris/bin/lutris-wrapper"
+    flatpak_runtime_path = "/app/lib/lutris"
+    if not os.path.isfile(flatpak_wrapper_path):
+        return
+
+    current_launcher_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    current_candidate = os.path.abspath(os.path.join(current_launcher_dir, ".."))
+    current_wrapper_path = os.path.join(
+        current_candidate, "share/lutris/bin/lutris-wrapper"
+    )
+
+    if os.path.isfile(current_wrapper_path):
+        return
+
+    sys.argv[0] = "/app/bin/lutris"
+    if sys.path:
+        sys.path[0] = flatpak_runtime_path
 
 
 def get_coverart_path_main():
@@ -72,6 +81,9 @@ def list_games_main():
 
 
 def get_config(game_slug=None, runner_slug=None):
+    from lutris.config import LutrisConfig
+    from lutris.database.games import get_game_by_field
+
     if game_slug:
         game = get_game_by_field(game_slug, "slug") or get_game_by_field(
             game_slug, "id"
@@ -137,6 +149,17 @@ def format_option(opt, values):
 
 
 def get_settings_main(game_slug=None, runner_slug=None):
+    ensure_lutris_runtime_paths()
+    from lutris import sysoptions
+    from lutris.database.games import get_game_by_field
+    from lutris.runners import import_runner
+    from lutris.startup import init_lutris
+
+    try:
+        from lutris.runners import InvalidRunnerError
+    except ImportError:
+        from lutris.runners import InvalidRunner as InvalidRunnerError
+
     init_lutris()
     game_name = None
     if game_slug:
@@ -188,6 +211,9 @@ def get_settings_main(game_slug=None, runner_slug=None):
 def update_setting_main(
     section, key, value, value_type=None, game_slug=None, runner_slug=None
 ):
+    ensure_lutris_runtime_paths()
+    from lutris.startup import init_lutris
+
     init_lutris()
     config, _ = get_config(game_slug, runner_slug)
     if not config:
@@ -212,9 +238,45 @@ def update_setting_main(
     _print_subcommand_output({"status": "success"})
 
 
+def humanize_runner_name(name):
+    known_names = {
+        "linux": "Linux",
+        "wine": "Wine",
+        "steam": "Steam",
+        "flatpak": "Flatpak",
+        "native": "Native",
+        "retroarch": "RetroArch",
+        "scummvm": "ScummVM",
+        "dosbox": "DOSBox",
+        "mame": "MAME",
+    }
+    if name in known_names:
+        return known_names[name]
+    return str(name).replace("_", " ").replace("-", " ").title()
+
+
 def list_runners_main():
-    installed_runners = get_installed_runners()
-    result = [{"name": r.name, "human_name": r.human_name} for r in installed_runners]
+    try:
+        ensure_lutris_runtime_paths()
+        from lutris.runners import get_installed as get_installed_runners
+
+        installed_runners = get_installed_runners()
+        result = [
+            {"name": r.name, "human_name": r.human_name} for r in installed_runners
+        ]
+    except Exception:
+        runner_names = sorted(
+            {
+                game.get("runner")
+                for game in games.get_games()
+                if game.get("runner")
+            }
+        )
+        result = [
+            {"name": runner_name, "human_name": humanize_runner_name(runner_name)}
+            for runner_name in runner_names
+        ]
+
     _print_subcommand_output({"runners": result})
 
 

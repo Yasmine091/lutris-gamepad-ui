@@ -31,10 +31,57 @@
 .button-keyboard-r1,
 .button-keyboard-l2,
 .button-keyboard-r2,
+.button-keyboard-start,
 .button-keyboard-super {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
   color: #fff;
+}
+
+.button-keyboard-start {
+  border-radius: 8px;
+  padding: 0 8px;
+  width: auto;
+}
+
+.button-xbox-start,
+.button-playstation-start,
+.button-generic-start {
+  border-radius: 50%;
+  padding: 0;
+  width: 28px;
+}
+
+.button-xbox-l1,
+.button-playstation-l1,
+.button-generic-l1 {
+  border-radius: 22px 8px 8px 8px;
+  padding: 0 8px;
+  width: auto;
+}
+
+.button-xbox-r1,
+.button-playstation-r1,
+.button-generic-r1 {
+  border-radius: 8px 22px 8px 8px;
+  padding: 0 8px;
+  width: auto;
+}
+
+.button-xbox-l2,
+.button-playstation-l2,
+.button-generic-l2 {
+  border-radius: 8px 8px 8px 22px;
+  padding: 0 8px;
+  width: auto;
+}
+
+.button-xbox-r2,
+.button-playstation-r2,
+.button-generic-r2 {
+  border-radius: 8px 8px 22px 8px;
+  padding: 0 8px;
+  width: auto;
 }
 
 .button-xbox-a {
@@ -63,6 +110,7 @@
 .button-xbox-r1,
 .button-xbox-l2,
 .button-xbox-r2,
+.button-xbox-start,
 .button-xbox-super {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
@@ -94,6 +142,7 @@
 .button-playstation-r1,
 .button-playstation-l2,
 .button-playstation-r2,
+.button-playstation-start,
 .button-playstation-super {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
@@ -108,6 +157,34 @@
   height: 28px;
   font-size: 1rem;
 }
+.button-hint.size-large .button-keyboard-start {
+  min-width: 38px;
+}
+.button-hint.size-large .button-xbox-l1,
+.button-hint.size-large .button-xbox-r1,
+.button-hint.size-large .button-playstation-l1,
+.button-hint.size-large .button-playstation-r1,
+.button-hint.size-large .button-generic-l1,
+.button-hint.size-large .button-generic-r1 {
+  min-width: 46px;
+  height: 20px;
+}
+
+.button-hint.size-large .button-xbox-l2,
+.button-hint.size-large .button-xbox-r2,
+.button-hint.size-large .button-playstation-l2,
+.button-hint.size-large .button-playstation-r2,
+.button-hint.size-large .button-generic-l2,
+.button-hint.size-large .button-generic-r2 {
+  min-width: 46px;
+  height: 28px;
+}
+.button-hint.size-large .button-xbox-start,
+.button-hint.size-large .button-playstation-start,
+.button-hint.size-large .button-generic-start {
+  min-width: 28px;
+  width: 28px;
+}
 .button-hint.size-large .button-label {
   font-size: 1rem;
 }
@@ -119,6 +196,34 @@
   width: 24px;
   height: 24px;
   font-size: 0.9rem;
+}
+.button-hint.size-small .button-keyboard-start {
+  min-width: 34px;
+}
+.button-hint.size-small .button-xbox-l1,
+.button-hint.size-small .button-xbox-r1,
+.button-hint.size-small .button-playstation-l1,
+.button-hint.size-small .button-playstation-r1,
+.button-hint.size-small .button-generic-l1,
+.button-hint.size-small .button-generic-r1 {
+  min-width: 36px;
+  height: 16px;
+}
+
+.button-hint.size-small .button-xbox-l2,
+.button-hint.size-small .button-xbox-r2,
+.button-hint.size-small .button-playstation-l2,
+.button-hint.size-small .button-playstation-r2,
+.button-hint.size-small .button-generic-l2,
+.button-hint.size-small .button-generic-r2 {
+  min-width: 36px;
+  height: 24px;
+}
+.button-hint.size-small .button-xbox-start,
+.button-hint.size-small .button-playstation-start,
+.button-hint.size-small .button-generic-start {
+  min-width: 24px;
+  width: 24px;
 }
 .button-hint.size-small .button-label {
   font-size: 0.9rem;

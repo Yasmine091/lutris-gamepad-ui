@@ -8,6 +8,7 @@ import OnScreenKeyboard from "./OnScreenKeyboard";
 import { playButtonActionSound as playActionSound } from "../utils/sound";
 import { toggleWindowShow } from "../utils/ipc";
 import ConfirmationDialog from "./ConfirmationDialog";
+import LutrisSettingsMenu from "./LutrisSettingsMenu";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { useTranslation } from "../contexts/TranslationContext";
@@ -380,6 +381,27 @@ const LibraryContainer = () => {
     setSearchQuery("");
   }, [setSearchQuery]);
 
+  const openSystemMenu = useCallback(() => {
+    window.dispatchEvent(new Event("toggle-system-menu"));
+  }, []);
+
+  const showGameSettingsCb = useCallback(
+    (game) => {
+      if (!game?.slug) {
+        return;
+      }
+
+      showModal((hideThisModal) => (
+        <LutrisSettingsMenu
+          gameSlug={game.slug}
+          runnerSlug={game.runner || null}
+          onClose={hideThisModal}
+        />
+      ));
+    },
+    [showModal],
+  );
+
   useEffect(() => {
     if (!runningGame && gameCloseCloseModalRef.current) {
       gameCloseCloseModalRef.current();
@@ -628,6 +650,16 @@ const LibraryContainer = () => {
           playActionSound();
           showSearchModalCb();
           break;
+        case "Y":
+          if (currentFocusedGame?.slug) {
+            playActionSound();
+            showGameSettingsCb(currentFocusedGame);
+          }
+          break;
+        case "Start":
+          playActionSound();
+          openSystemMenu();
+          break;
       }
     },
     [
@@ -645,6 +677,8 @@ const LibraryContainer = () => {
       handlePrevTab,
       handleNextTab,
       handleNavigation,
+      openSystemMenu,
+      showGameSettingsCb,
     ],
   );
 
@@ -665,10 +699,6 @@ const LibraryContainer = () => {
     },
   ]);
 
-  const openSystemMenu = useCallback(() => {
-    window.dispatchEvent(new Event("toggle-system-menu"));
-  }, []);
-
   const stableOnLaunchGame = useCallback(() => {
     const { shelf, card } = focusCoordsRef.current;
     const game = shelvesRef.current[shelf]?.games[card];
@@ -677,6 +707,14 @@ const LibraryContainer = () => {
     }
   }, [launchGame]);
 
+  const stableOnShowGameSettings = useCallback(() => {
+    const { shelf, card } = focusCoordsRef.current;
+    const game = shelvesRef.current[shelf]?.games[card];
+    if (game?.slug) {
+      showGameSettingsCb(game);
+    }
+  }, [showGameSettingsCb]);
+
   if (loading) {
     return <LoadingIndicator message={t("Loading library...")} />;
   }
@@ -684,6 +722,10 @@ const LibraryContainer = () => {
   const controlsOverlayProps = {
     onOpenSystemMenu: openSystemMenu,
   };
+
+  if (!isModalOpen && focusedGame?.slug) {
+    controlsOverlayProps.onShowGameSettings = stableOnShowGameSettings;
+  }
 
   if (!isModalOpen && isFocusedGameRunning) {
     controlsOverlayProps.onCloseRunningGame = closeRunningGameDialogCb;
@@ -725,6 +767,7 @@ const LibraryContainer = () => {
         heroIsRunning={isFocusedGameRunning}
         heroIsPaused={false}
         onHeroForceClose={closeRunningGameDialogCb}
+        onHeroShowSettings={stableOnShowGameSettings}
         showTabs={!searchQuery}
       />
     </ControlsOverlay>

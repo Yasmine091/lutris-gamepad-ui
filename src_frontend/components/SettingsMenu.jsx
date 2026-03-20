@@ -5,8 +5,8 @@ import {
   useSettingsState,
 } from "../contexts/SettingsContext";
 import "../styles/SettingsMenu.css";
+import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
-import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
 import ToggleButton from "./ToggleButton";
 
@@ -479,20 +479,19 @@ const SettingsMenu = ({ onClose }) => {
   ]);
 
   return (
-    <div className="settings-menu-container">
-      <LegendaContainer legendItems={legendItems}>
-        <div>
-          <h2 className="settings-menu-title">{t("Settings")}</h2>
-          <RowBasedMenu
-            items={menuItems}
-            renderItem={renderItem}
-            onAction={handleAction}
-            onFocusChange={setFocusedItem}
-            focusId={SettingsMenuFocusId}
-          />
-        </div>
-      </LegendaContainer>
-    </div>
+    <DialogLayout
+      title={t("Settings")}
+      legendItems={legendItems}
+      maxWidth="700px"
+    >
+      <RowBasedMenu
+        items={menuItems}
+        renderItem={renderItem}
+        onAction={handleAction}
+        onFocusChange={setFocusedItem}
+        focusId={SettingsMenuFocusId}
+      />
+    </DialogLayout>
   );
 };
 

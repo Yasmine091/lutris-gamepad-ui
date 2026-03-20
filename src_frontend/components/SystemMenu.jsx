@@ -241,7 +241,7 @@ const SystemMenu = () => {
 
   useGlobalShortcut([
     {
-      key: "Y",
+      key: "Start",
       action: useCallback(() => {
         playActionSound();
         toggleMenu();

@@ -139,6 +139,32 @@ const CtrlXIcon = () => (
   </svg>
 );
 
+const MenuButtonIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    width="0.9em"
+    height="0.9em"
+  >
+    <rect
+      x="5"
+      y="6"
+      width="14"
+      height="3"
+      rx="1.5"
+      fill="currentColor"
+    />
+    <rect
+      x="5"
+      y="15"
+      width="14"
+      height="3"
+      rx="1.5"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 const BUTTON_CONTENT_MAP = {
   keyboard: {
     super: <CtrlXIcon />,
@@ -146,12 +172,14 @@ const BUTTON_CONTENT_MAP = {
     r1: "2",
     l2: "3",
     r2: "4",
+    start: "Esc",
   },
   xbox: {
     l1: "LB",
     r1: "RB",
     l2: "LT",
     r2: "RT",
+    start: <MenuButtonIcon />,
   },
   playstation: {
     a: <PlayStationCrossIcon />,
@@ -162,6 +190,7 @@ const BUTTON_CONTENT_MAP = {
     r1: "R1",
     l2: "L2",
     r2: "R2",
+    start: <MenuButtonIcon />,
   },
   generic: {
     a: "A",
@@ -173,6 +202,7 @@ const BUTTON_CONTENT_MAP = {
     l2: "L2",
     r2: "R2",
     super: <SuperIcon />,
+    start: "Start",
     left: <LeftArrowIcon />,
     right: <RightArrowIcon />,
     up: <UpArrowIcon />,

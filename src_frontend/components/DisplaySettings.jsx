@@ -34,8 +34,13 @@ const DisplaySettings = ({ onClose }) => {
     try {
       const b = await api.getBrightness();
       if (isMounted()) {
-        setBrightness(b);
-        setBrightnessError(false);
+        if (typeof b === "number" && Number.isFinite(b)) {
+          setBrightness(b);
+          setBrightnessError(false);
+        } else {
+          setBrightness(null);
+          setBrightnessError(true);
+        }
       }
     } catch {
       if (isMounted()) {
@@ -46,8 +51,13 @@ const DisplaySettings = ({ onClose }) => {
     try {
       const nl = await api.getNightLight();
       if (isMounted()) {
-        setNightLight(nl);
-        setNightLightError(false);
+        if (typeof nl === "boolean") {
+          setNightLight(nl);
+          setNightLightError(false);
+        } else {
+          setNightLight(null);
+          setNightLightError(true);
+        }
       }
     } catch {
       if (isMounted()) {
