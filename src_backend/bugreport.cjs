@@ -1,26 +1,29 @@
-const { logError, showToastOnUi, execPromise } = require("./utils.cjs");
-const util = require("util");
+const { writeFile, readFile } = require("node:fs/promises");
+const os = require("node:os");
+const { inspect } = require("node:util");
+
 const { packTar } = require("modern-tar");
-const { writeFile, readFile } = require("fs/promises");
-const {
-  generateBugReportFilePath,
-  getKvStorageFilePath,
-  getLogFilePath,
-} = require("./storage.cjs");
+
+const packageJson = require("../package.json");
+
 const {
   invokeLutris,
   getLutrisGames,
   getAllGamesCategories,
 } = require("./lutris_wrapper.cjs");
-const packageJson = require("../package.json");
-const os = require("os");
+const {
+  generateBugReportFilePath,
+  getKvStorageFilePath,
+  getLogFilePath,
+} = require("./storage.cjs");
+const { logError, showToastOnUi, execPromise } = require("./utils.cjs");
 
 async function createBugReportFile() {
   const reporters = [
     { filename: "system-info", generator: generateSystemInfo },
     { filename: "app-config", generator: generateAppConfig },
     { filename: "app-logs", generator: generateAppLogs },
-    { filename: "env", generator: generateEnv },
+    { filename: "env", generator: generateEnvironment },
     { filename: "lsb-release", generator: generateLsbRelease },
     { filename: "package", generator: generatePackageJson },
     {
@@ -89,9 +92,9 @@ async function createBugReportFile() {
 
     try {
       content = await generator();
-    } catch (e) {
-      logError("unable to generate bug report file", filename, e);
-      content = util.inspect(e);
+    } catch (error) {
+      logError("unable to generate bug report file", filename, error);
+      content = inspect(error);
     }
 
     let contentString;
@@ -140,7 +143,7 @@ async function generateWhereIsBugReport(filename) {
   return await execPromise(`bash -c "whereis ${filename}"`);
 }
 
-async function generateEnv() {
+async function generateEnvironment() {
   return process.env;
 }
 

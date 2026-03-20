@@ -1,17 +1,30 @@
-const { execPromise, logError, getLutrisWrapperPath } = require("./utils.cjs");
+const {
+  execFilePromise,
+  logError,
+  getLutrisWrapperPath,
+  logInfo,
+  getRunExclusive,
+} = require("./utils.cjs");
 
 const SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:";
 
-async function invokeLutrisSubcommand(subcommandName, args = []) {
+const settingsRunExclusive = getRunExclusive();
+
+async function invokeLutrisSubcommand(subcommandName, arguments_ = []) {
+  logInfo("invokeLutrisSubcommand", subcommandName, JSON.stringify(arguments_));
+
   try {
-    const { stdout } = await invokeLutris(["--" + subcommandName, ...args]);
+    const { stdout } = await invokeLutris([
+      "--" + subcommandName,
+      ...arguments_,
+    ]);
 
     const outputLine = stdout
       .split(/\r?\n/)
       .find((line) => line.startsWith(SUBCOMMAND_OUTPUT_HEADER));
 
     if (outputLine) {
-      const jsonString = outputLine.substring(SUBCOMMAND_OUTPUT_HEADER.length);
+      const jsonString = outputLine.slice(SUBCOMMAND_OUTPUT_HEADER.length);
       return JSON.parse(jsonString);
     } else {
       throw new Error(`Output header not found`);
@@ -20,18 +33,15 @@ async function invokeLutrisSubcommand(subcommandName, args = []) {
     logError(
       "failed to execute lutris wrapper subcommand",
       subcommandName,
-      args,
-      error
+      arguments_,
+      error,
     );
     throw error;
   }
 }
 
-async function invokeLutris(args = []) {
-  const serializedArgs = args.map((arg) => JSON.stringify(String(arg))).join(" ");
-  return await execPromise(
-    `bash "${getLutrisWrapperPath()}" ${serializedArgs}`.trim()
-  );
+async function invokeLutris(arguments_ = []) {
+  return await execFilePromise("bash", [getLutrisWrapperPath(), ...arguments_]);
 }
 
 async function getCoverartPath() {
@@ -54,11 +64,44 @@ async function getLutrisGames() {
   return await invokeLutrisSubcommand("list-games");
 }
 
+async function getLutrisSettings(gameSlug = null, runnerSlug = null) {
+  const arguments_ = [];
+  if (gameSlug) arguments_.push("--game", gameSlug);
+  if (runnerSlug) arguments_.push("--runner", runnerSlug);
+  return settingsRunExclusive(async () => {
+    return await invokeLutrisSubcommand("get-settings", arguments_);
+  });
+}
+
+async function updateLutrisSetting(
+  section,
+  key,
+  value,
+  type = null,
+  gameSlug = null,
+  runnerSlug = null,
+) {
+  const arguments_ = [section, key, String(value)];
+  if (type) arguments_.push("--type", type);
+  if (gameSlug) arguments_.push("--game", gameSlug);
+  if (runnerSlug) arguments_.push("--runner", runnerSlug);
+  return settingsRunExclusive(async () => {
+    return await invokeLutrisSubcommand("update-setting", arguments_);
+  });
+}
+
+async function getLutrisRunners() {
+  return await invokeLutrisSubcommand("list-runners");
+}
+
 module.exports = {
   getCoverartPath,
   getBannerartPath,
   getRuntimeIconPath,
   getAllGamesCategories,
   getLutrisGames,
+  getLutrisSettings,
+  updateLutrisSetting,
+  getLutrisRunners,
   invokeLutris,
 };

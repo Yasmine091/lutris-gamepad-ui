@@ -3,13 +3,18 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
-import * as ipc from "../utils/ipc";
-import { useIsMounted } from "../hooks/useIsMounted";
 
-const LutrisContext = createContext(null);
-export const useLutris = () => useContext(LutrisContext);
+import { useIsMounted } from "../hooks/useIsMounted";
+import * as ipc from "../utils/ipc";
+
+const LutrisStateContext = createContext(null);
+const LutrisActionsContext = createContext(null);
+
+export const useLutris = () => useContext(LutrisStateContext);
+export const useLutrisActions = () => useContext(LutrisActionsContext);
 
 function extractReleaseYear(game) {
   const candidates = [
@@ -105,8 +110,9 @@ export const LutrisProvider = ({ children }) => {
 
       const mappedGames = allGames.map((game) => ({
         id: game.id,
+        slug: game.slug,
         title: game.name || game.slug,
-        playtimeSeconds: game.playtime * 3600,
+        playtimeSeconds: (game.playtime || 0) * 3600,
         lastPlayed: game.lastplayed ? new Date(game.lastplayed * 1000) : null,
         coverPath: game.coverPath,
         bannerPath: game.bannerPath || game.banner_path || game.banner || null,
@@ -195,17 +201,30 @@ export const LutrisProvider = ({ children }) => {
     ipc.closeGame(runningGame);
   }, [runningGame]);
 
-  const value = {
-    games,
-    loading,
-    runningGame,
-    isGamePaused,
-    fetchGames,
-    launchGame,
-    closeRunningGame,
-  };
+  const stateValue = useMemo(
+    () => ({
+      games,
+      loading,
+      runningGame,
+      isGamePaused,
+    }),
+    [games, loading, runningGame, isGamePaused],
+  );
+
+  const actionsValue = useMemo(
+    () => ({
+      fetchGames,
+      launchGame,
+      closeRunningGame,
+    }),
+    [fetchGames, launchGame, closeRunningGame],
+  );
 
   return (
-    <LutrisContext.Provider value={value}>{children}</LutrisContext.Provider>
+    <LutrisStateContext.Provider value={stateValue}>
+      <LutrisActionsContext.Provider value={actionsValue}>
+        {children}
+      </LutrisActionsContext.Provider>
+    </LutrisStateContext.Provider>
   );
 };

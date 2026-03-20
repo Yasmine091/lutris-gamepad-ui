@@ -6,8 +6,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import * as ipc from "../utils/ipc";
+
 import { useIsMounted } from "../hooks/useIsMounted";
+import * as ipc from "../utils/ipc";
 
 const SettingsStateContext = createContext(null);
 const SettingsActionsContext = createContext(null);
@@ -33,8 +34,8 @@ export const SettingsProvider = ({ children }) => {
           applyAccentColor(config?.accentColor);
         }
       })
-      .catch((err) => {
-        ipc.logError("Failed to get initial app config:", err);
+      .catch((error) => {
+        ipc.logError("Failed to get initial app config:", error);
         if (isMounted()) {
           setSettings({});
         }

@@ -1,9 +1,10 @@
-const util = require("util");
+const fs = require("node:fs");
+const { format } = require("node:util");
+
 const { getLogFilePath } = require("./storage.cjs");
-const fs = require("fs");
 
 /** @type {fs.WriteStream | null} */
-let logStream = undefined;
+let logStream;
 
 const levelToConsoleMethod = {
   INFO: console.log,
@@ -22,25 +23,25 @@ function initialize() {
     logStream = null;
     console.error(
       "Failed to initialize file logger. Logging will only be sent to the console.",
-      error
+      error,
     );
   }
 }
 
-const writeLog = (level, ...args) => {
+const writeLog = (level, ...arguments_) => {
   initialize();
 
   const timestamp = new Date().toISOString();
-  const message = util.format(args);
+  const message = format(...arguments_);
   const formattedMessage = `[${timestamp}] [${level}] ${message}`;
 
   const consoleMethod = levelToConsoleMethod[level] || console.log;
-  consoleMethod(`[${timestamp}] [${level}]`, ...args);
+  consoleMethod(`[${timestamp}] [${level}]`, ...arguments_);
 
   if (logStream && logStream.writable) {
-    logStream.write(formattedMessage + "\n\r", (err) => {
-      if (err) {
-        console.error("Failed to write to log file:", err);
+    logStream.write(formattedMessage + "\n\r", (error) => {
+      if (error) {
+        console.error("Failed to write to log file:", error);
         logStream = null;
       }
     });
@@ -48,9 +49,9 @@ const writeLog = (level, ...args) => {
 };
 
 const logger = {
-  info: (...args) => writeLog("INFO", ...args),
-  warn: (...args) => writeLog("WARN", ...args),
-  error: (...args) => writeLog("ERROR", ...args),
+  info: (...arguments_) => writeLog("INFO", ...arguments_),
+  warn: (...arguments_) => writeLog("WARN", ...arguments_),
+  error: (...arguments_) => writeLog("ERROR", ...arguments_),
 };
 
 module.exports = logger;

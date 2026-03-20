@@ -62,6 +62,22 @@
     "Show Error Details": "Visa felinformation",
     "The application has encountered an unexpected error.": "Programmet har stött på ett oväntat fel."
   },
+  "components/DisplaySettings.jsx": {
+    "Brightness": "Brightness",
+    "Close": "Close",
+    "Decrease": "Decrease",
+    "Disable": "Disable",
+    "Display Settings": "Display Settings",
+    "Enable": "Enable",
+    "Failed to load brightness. Check your desktop environment compatibility.": "Failed to load brightness. Check your desktop environment compatibility.",
+    "Failed to load night light. Check your desktop environment compatibility.": "Failed to load night light. Check your desktop environment compatibility.",
+    "Increase": "Increase",
+    "Loading Display Settings...": "Loading Display Settings...",
+    "Night Light": "Night Light",
+    "No display settings available.": "No display settings available.",
+    "Reload": "Reload",
+    "Update": "Update"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Senast spelad: {{date}}",
     "Never": "Aldrig",
@@ -113,6 +129,23 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "Laddar..."
   },
+  "components/LutrisSettingsFlow.jsx": {
+    "Failed to fetch Lutris runners": "Failed to fetch Lutris runners",
+    "Global": "Global",
+    "Lutris Settings": "Lutris Settings",
+    "Select Runner": "Select Runner"
+  },
+  "components/LutrisSettingsMenu.jsx": {
+    "Close": "Close",
+    "Default": "Default",
+    "Disable": "Disable",
+    "Enable": "Enable",
+    "Lutris Settings": "Lutris Settings",
+    "Next": "Next",
+    "Prev": "Prev",
+    "Select": "Select",
+    "Settings: {{name}}": "Settings: {{name}}"
+  },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "Backsteg",
     "Close": "Stäng",
@@ -128,6 +161,10 @@
     "Now Playing": "Spelas nu",
     "Paused": "Paused",
     "Playtime: {{playtime}}": "Speltid: {{playtime}}"
+  },
+  "components/SelectionMenu.jsx": {
+    "Back": "Back",
+    "Select": "Select"
   },
   "components/SettingsMenu.jsx": {
     "Accent Color": "Accent Color",
@@ -160,8 +197,10 @@
     "Continue with exiting the application?": "Fortsätt med att avsluta programmet?",
     "Continue with system power off?": "Fortsätt med att stänga av systemet?",
     "Continue with system reboot?": "Fortsätt med att starta om systemet?",
+    "Display Settings": "Display Settings",
     "Exit Application": "Avsluta programmet",
     "Generate Bug Report": "Generate Bug Report",
+    "Lutris Settings": "Lutris Settings",
     "Open Lutris": "Öppna Lutris",
     "Power Off System": "Stäng av systemet",
     "Reboot System": "Starta om systemet",
@@ -186,6 +225,8 @@
     "Close": "Stäng",
     "Current Output:": "Nuvarande utgång:",
     "Decrease": "Minska",
+    "Disable": "Disable",
+    "Enable": "Enable",
     "Increase": "Öka",
     "Loading Audio Settings...": "Laddar ljudinställningar...",
     "Mute": "Tysta",
@@ -194,6 +235,7 @@
     "Prev": "Föreg.",
     "Select Output": "Välj utgång",
     "Set Device": "Ställ in enhet",
+    "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Unmute": "Slå på ljud",
     "Volume": "Volym"
   }

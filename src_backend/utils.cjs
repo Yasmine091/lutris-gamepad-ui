@@ -1,8 +1,8 @@
-const { exec } = require("child_process");
-const { promisify } = require("util");
-const { existsSync, readdirSync } = require("fs");
+const { exec, execFile } = require("node:child_process");
+const { existsSync, readdirSync, readFileSync } = require("node:fs");
 const path = require("node:path");
 const { cwd } = require("node:process");
+const { promisify } = require("node:util");
 
 const {
   info: logInfo,
@@ -10,25 +10,48 @@ const {
   error: logError,
 } = require("./logger.cjs");
 const { getMainWindow } = require("./state.cjs");
-const { readFileSync } = require("node:fs");
 
 const execPromise = promisify(exec);
+const execFilePromise = promisify(execFile);
 
-const isDev = process.env.IS_DEV === "1";
+async function spawnGSettings(arguments_) {
+  try {
+    const { stdout } = await execFilePromise("gsettings", arguments_);
+    return stdout.trim();
+  } catch (error) {
+    logError("gsettings error:", error);
+    throw error;
+  }
+}
+
+async function spawnDdcutil(arguments_) {
+  try {
+    const { stdout } = await execFilePromise("ddcutil", arguments_);
+    return stdout.trim();
+  } catch (error) {
+    logError("ddcutil error:", error);
+    throw error;
+  }
+}
+
+const isDevelopment = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
 
 function localeAppFile(name) {
   const DIRECTORIES = [
-    cwd(),
-    __dirname,
-    path.join(__dirname, ".."),
     process.resourcesPath,
     process.resourcesPath
       ? path.join(process.resourcesPath, "app.asar.unpacked")
       : null,
-  ].filter((directory) => typeof directory === "string" && directory.length);
+    cwd(),
+    __dirname,
+    path.join(__dirname, ".."),
+  ];
+  const filteredDirectories = DIRECTORIES.filter(
+    (directory) => typeof directory === "string" && directory.length,
+  );
 
-  for (const directory of DIRECTORIES) {
+  for (const directory of filteredDirectories) {
     const absolutePath = path.join(directory, name);
     if (existsSync(absolutePath)) {
       return absolutePath;
@@ -48,7 +71,7 @@ function getElectronPreloadPath() {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function retryAsync(fn, options = {}) {
+async function retryAsync(function_, options = {}) {
   const {
     maxTries = 3,
     initialDelay = 200,
@@ -58,7 +81,7 @@ async function retryAsync(fn, options = {}) {
 
   for (let attempt = 1; attempt <= maxTries; attempt++) {
     try {
-      return await fn();
+      return await function_();
     } catch (error) {
       if (attempt === maxTries) {
         throw error;
@@ -72,13 +95,13 @@ async function retryAsync(fn, options = {}) {
   }
 }
 
-const debounce = (func, wait) => {
+const debounce = (function_, wait) => {
   let timeout;
 
-  return function executedFunction(...args) {
+  return function executedFunction(...arguments_) {
     const later = () => {
       clearTimeout(timeout);
-      func(...args);
+      function_(...arguments_);
     };
 
     clearTimeout(timeout);
@@ -105,7 +128,7 @@ function errorToDescription(error) {
   } else if (typeof error === "string") {
     description = error;
   } else if (Array.isArray(error)) {
-    description = error.map(errorToDescription).join("\n");
+    description = error.map((error_) => errorToDescription(error_)).join("\n");
   }
 
   return description;
@@ -129,9 +152,9 @@ async function rebootPc() {
     try {
       await execPromise(command);
       return;
-    } catch (e) {
-      logError("unable to reboot pc using", command, e);
-      errors.push(e);
+    } catch (error) {
+      logError("unable to reboot pc using", command, error);
+      errors.push(error);
     }
   }
 
@@ -146,9 +169,9 @@ async function powerOffPc() {
     try {
       await execPromise(command);
       return;
-    } catch (e) {
-      logError("unable to poweroff pc using", command, e);
-      errors.push(e);
+    } catch (error) {
+      logError("unable to poweroff pc using", command, error);
+      errors.push(error);
     }
   }
 
@@ -198,15 +221,14 @@ function getProcessDescendants(pid, visitedPids) {
       getProcessDescendants(childPid, visitedPids),
     );
 
-    return childPids.concat(descendants);
-  } catch (e) {
-    if (e?.code !== "ENOENT" && e?.code !== "ESRCH") {
-      logError("Unable to read children of pid", pid, e);
+    return [...childPids, ...descendants];
+  } catch (error) {
+    if (error?.code !== "ENOENT" && error?.code !== "ESRCH") {
+      logError("Unable to read children of pid", pid, error);
     }
     return [];
   }
 }
-
 function getProcessGroupId(pid) {
   try {
     const statFile = readFileSync(`/proc/${pid}/stat`, "utf8").trim();
@@ -364,10 +386,23 @@ function getPidsByCommandLinePatterns(patterns = []) {
   return matched;
 }
 
+function getRunExclusive() {
+  let queue = Promise.resolve();
+
+  const runExclusive = (function_) => {
+    queue = queue.then(function_, function_);
+    return queue;
+  };
+
+  return runExclusive;
+}
+
 module.exports = {
-  isDev,
+  isDev: isDevelopment,
   forceWindowed,
   execPromise,
+  spawnGSettings,
+  spawnDdcutil,
   getLutrisWrapperPath,
   getElectronPreloadPath,
   retryAsync,
@@ -387,4 +422,6 @@ module.exports = {
   getProcessCommandLine,
   getPidsByCommandLinePatterns,
   isProcessPaused,
+  getRunExclusive,
+  execFilePromise,
 };

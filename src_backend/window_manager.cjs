@@ -1,3 +1,6 @@
+const path = require("node:path");
+const url = require("node:url");
+
 const {
   BrowserWindow,
   session,
@@ -6,14 +9,25 @@ const {
   net,
   app,
 } = require("electron");
-const path = require("node:path");
-const url = require("url");
+
+const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
+const {
+  getAppConfig,
+  subscribeConfigValueChange,
+} = require("./config_manager.cjs");
+const {
+  startRemoteDesktopSession,
+  sendAltTab,
+  stopRemoteDesktopSession,
+} = require("./remote_desktop_manager.cjs");
 const {
   setMainWindow,
   getMainWindow,
   getWhitelistedFiles,
   getRemoteDesktopSessionHandle,
 } = require("./state.cjs");
+const { initializeThemeManager } = require("./theme_manager.cjs");
+const { checkForUpdates } = require("./update_checker.cjs");
 const {
   isDev,
   forceWindowed,
@@ -24,34 +38,22 @@ const {
   logInfo,
   isRunningInsideGamescope,
 } = require("./utils.cjs");
-const {
-  startRemoteDesktopSession,
-  sendAltTab,
-  stopRemoteDesktopSession,
-} = require("./remote_desktop_manager.cjs");
-const { initializeThemeManager } = require("./theme_manager.cjs");
-const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
-const {
-  getAppConfig,
-  subscribeConfigValueChange,
-} = require("./config_manager.cjs");
-const { checkForUpdates } = require("./update_checker.cjs");
 
 function getWindowZoomFactor() {
-  return getAppConfig().zoomFactor || 1.0;
+  return getAppConfig().zoomFactor || 1;
 }
 
 function setWindowZoomFactor(factor) {
   const mainWindow = getMainWindow();
   if (mainWindow) {
-    mainWindow.webContents.setZoomFactor(factor || 1.0);
+    mainWindow.webContents.setZoomFactor(factor || 1);
   }
 }
 
 function createSendAltTabDebounced(delayMs) {
   return debounce(() => {
-    sendAltTab().catch((e) => {
-      logError("unable to send alt+tab using remote desktop portal", e);
+    sendAltTab().catch((error) => {
+      logError("unable to send alt+tab using remote desktop portal", error);
     });
   }, delayMs);
 }
@@ -78,12 +80,12 @@ function toggleWindowShow() {
     sendAltTabDebounced();
   } else {
     logInfo("toggleWindowShow: using hide/show fallback");
-    if (!mainWindow.isMinimized()) {
-      mainWindow.minimize();
-    } else {
+    if (mainWindow.isMinimized()) {
       mainWindow.maximize();
       mainWindow.hide();
       mainWindow.restore();
+    } else {
+      mainWindow.minimize();
     }
   }
 }
@@ -132,11 +134,9 @@ function createWindow(onWindowClosedCallback) {
   } else {
     const mainAppDir = path.join(__dirname, "..");
 
-    if (mainAppDir.endsWith("/dist")) {
-      homePageUrl = path.join(mainAppDir, "index.html");
-    } else {
-      homePageUrl = path.join(mainAppDir, "dist/index.html");
-    }
+    homePageUrl = mainAppDir.endsWith("/dist")
+      ? path.join(mainAppDir, "index.html")
+      : path.join(mainAppDir, "dist/index.html");
 
     homePageUrl = "app://" + homePageUrl;
   }
@@ -182,8 +182,8 @@ function createWindow(onWindowClosedCallback) {
   subscribeConfigValueChange("zoomFactor", setWindowZoomFactor);
 
   const startRemoteDesktopSessionDebounced = debounce(() => {
-    startRemoteDesktopSession().catch((e) => {
-      logError("unable to start remote desktop session", e);
+    startRemoteDesktopSession().catch((error) => {
+      logError("unable to start remote desktop session", error);
     });
   }, 1000);
 
@@ -218,8 +218,8 @@ function createWindow(onWindowClosedCallback) {
     initializeThemeManager();
     subscribeToBluetoothChanges();
     win.webContents.setZoomFactor(getWindowZoomFactor());
-    checkForUpdates().catch((e) => {
-      logError("unable to check for new updates:", e);
+    checkForUpdates().catch((error) => {
+      logError("unable to check for new updates:", error);
     });
   });
 
@@ -227,8 +227,8 @@ function createWindow(onWindowClosedCallback) {
     if (enabled) {
       startRemoteDesktopSessionDebounced();
     } else {
-      stopRemoteDesktopSession().catch((e) => {
-        logError("unable to stop remote desktop session", e);
+      stopRemoteDesktopSession().catch((error) => {
+        logError("unable to stop remote desktop session", error);
       });
     }
   });

@@ -1,20 +1,22 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import { useScopedInput } from "../hooks/useScopedInput";
-import "../styles/ConfirmationDialog.css";
-import { playActionSound } from "../utils/sound";
-import LegendaContainer from "./LegendaContainer";
+
 import { useTranslation } from "../contexts/TranslationContext";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../hooks/useScopedInput";
+
+import DialogLayout from "./DialogLayout";
 
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
 
 const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
   const { t } = useTranslation();
   const [confirmSelection, setConfirmSelection] = useState(0);
+  const playActionSound = usePlayButtonActionSound();
 
-  const confirmSelectionRef = useRef(confirmSelection);
+  const confirmSelectionReference = useRef(confirmSelection);
 
   useEffect(() => {
-    confirmSelectionRef.current = confirmSelection;
+    confirmSelectionReference.current = confirmSelection;
   }, [confirmSelection]);
 
   const handleConfirm = useCallback(() => {
@@ -26,7 +28,7 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
   }, [onDeny]);
 
   const handleSubmit = useCallback(() => {
-    if (confirmSelectionRef.current === 0) {
+    if (confirmSelectionReference.current === 0) {
       handleConfirm();
     } else {
       handleDeny();
@@ -39,18 +41,21 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
 
       switch (input.name) {
         case "UP":
-        case "DOWN":
-          setConfirmSelection((prev) => (prev === 0 ? 1 : 0));
+        case "DOWN": {
+          setConfirmSelection((previous) => (previous === 0 ? 1 : 0));
           break;
-        case "A":
+        }
+        case "A": {
           handleSubmit();
           break;
-        case "B":
+        }
+        case "B": {
           handleDeny();
           break;
+        }
       }
     },
-    [handleDeny, handleSubmit]
+    [handleDeny, handleSubmit, playActionSound],
   );
 
   useScopedInput(inputHandler, ConfirmationDialogFocusId);
@@ -60,38 +65,31 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
       { button: "A", label: t("Select"), onClick: handleSubmit },
       { button: "B", label: t("Cancel"), onClick: handleDeny },
     ],
-    [handleSubmit, handleDeny, t]
+    [handleSubmit, handleDeny, t],
   );
 
   return (
-    <div className="confirmation-dialog">
-      <LegendaContainer legendItems={legendItems}>
-        <div className="confirmation-content">
-          <h3 className="confirmation-title">{message}</h3>
-          {description && (
-            <p className="confirmation-description">{description}</p>
-          )}
-          <div className="confirmation-buttons">
-            <button
-              className={`confirmation-button ${
-                confirmSelection === 0 ? "focused" : ""
-              }`}
-              onClick={handleConfirm}
-            >
-              {t("Confirm")}
-            </button>
-            <button
-              className={`confirmation-button ${
-                confirmSelection === 1 ? "focused" : ""
-              }`}
-              onClick={handleDeny}
-            >
-              {t("Cancel")}
-            </button>
-          </div>
-        </div>
-      </LegendaContainer>
-    </div>
+    <DialogLayout
+      title={message}
+      description={description}
+      legendItems={legendItems}
+      maxWidth="400px"
+    >
+      <div className="modal-buttons-group">
+        <button
+          className={`modal-button ${confirmSelection === 0 ? "focused" : ""}`}
+          onClick={handleConfirm}
+        >
+          {t("Confirm")}
+        </button>
+        <button
+          className={`modal-button ${confirmSelection === 1 ? "focused" : ""}`}
+          onClick={handleDeny}
+        >
+          {t("Cancel")}
+        </button>
+      </div>
+    </DialogLayout>
   );
 };
 

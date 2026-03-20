@@ -62,6 +62,22 @@
     "Show Error Details": "Mostra dettagli",
     "The application has encountered an unexpected error.": "L'applicazione ha riscontrato un errore imprevisto."
   },
+  "components/DisplaySettings.jsx": {
+    "Brightness": "Brightness",
+    "Close": "Close",
+    "Decrease": "Decrease",
+    "Disable": "Disable",
+    "Display Settings": "Display Settings",
+    "Enable": "Enable",
+    "Failed to load brightness. Check your desktop environment compatibility.": "Failed to load brightness. Check your desktop environment compatibility.",
+    "Failed to load night light. Check your desktop environment compatibility.": "Failed to load night light. Check your desktop environment compatibility.",
+    "Increase": "Increase",
+    "Loading Display Settings...": "Loading Display Settings...",
+    "Night Light": "Night Light",
+    "No display settings available.": "No display settings available.",
+    "Reload": "Reload",
+    "Update": "Update"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Ultimo avvio: {{date}}",
     "Never": "Mai giocato",
@@ -113,6 +129,23 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "Caricamento..."
   },
+  "components/LutrisSettingsFlow.jsx": {
+    "Failed to fetch Lutris runners": "Failed to fetch Lutris runners",
+    "Global": "Global",
+    "Lutris Settings": "Lutris Settings",
+    "Select Runner": "Select Runner"
+  },
+  "components/LutrisSettingsMenu.jsx": {
+    "Close": "Close",
+    "Default": "Default",
+    "Disable": "Disable",
+    "Enable": "Enable",
+    "Lutris Settings": "Lutris Settings",
+    "Next": "Next",
+    "Prev": "Prev",
+    "Select": "Select",
+    "Settings: {{name}}": "Settings: {{name}}"
+  },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "Cancella",
     "Close": "Chiudi",
@@ -128,6 +161,10 @@
     "Now Playing": "In gioco",
     "Paused": "Paused",
     "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
+  },
+  "components/SelectionMenu.jsx": {
+    "Back": "Back",
+    "Select": "Select"
   },
   "components/SettingsMenu.jsx": {
     "Accent Color": "Colore Evidenziazione",
@@ -159,9 +196,11 @@
     "Continue with exiting the application?": "Uscire dall'applicazione?",
     "Continue with system power off?": "Procedere con lo spegnimento del sistema?",
     "Continue with system reboot?": "Procedere con il riavvio del sistema?",
+    "Display Settings": "Display Settings",
     "Exit Application": "Esci",
     "Generate Bug Report": "Genera segnalazione bug",
     "Library reloaded successfully!": "Libreria ricaricata con successo!",
+    "Lutris Settings": "Lutris Settings",
     "Open Lutris": "Apri Lutris",
     "Power Off System": "Spegni il sistema",
     "Reboot System": "Riavvia il sistema",
@@ -186,6 +225,8 @@
     "Close": "Chiudi",
     "Current Output:": "Uscita corrente:",
     "Decrease": "Abbassa",
+    "Disable": "Disable",
+    "Enable": "Enable",
     "Increase": "Alza",
     "Loading Audio Settings...": "Caricamento impostazioni audio...",
     "Mute": "Silenzia",
@@ -194,6 +235,7 @@
     "Prev": "Precedente",
     "Select Output": "Seleziona uscita",
     "Set Device": "Imposta come predefinito",
+    "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Unmute": "Riattiva audio",
     "Volume": "Volume"
   }

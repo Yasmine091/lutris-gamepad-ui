@@ -1,7 +1,7 @@
 {
   "name": "lutris-gamepad-ui",
   "private": true,
-  "version": "0.1.31",
+  "version": "0.1.32",
   "main": "electron.cjs",
   "type": "module",
   "description": "A simple, TV-friendly, gamepad-navigable frontend for the Lutris game launcher on Linux.",
@@ -17,11 +17,11 @@
     "start:prod": "npm run build:vite && electron39 electron.cjs",
     "start:prod-wayland": "npm run build:vite && electron39 electron.cjs --ozone-platform=wayland",
     "start:prod-steamdeck": "npm run build:vite && gamescope -W 1280 -w 1280 -H 800 -h 800 -- electron39 electron.cjs",
-    "build": "vite build && npm run electron:build",
     "build:vite": "vite build",
-    "preview": "vite preview",
+    "electron:build": "electron-builder --config electron-builder.config.cjs",
+    "build": "npm run build:vite && npm run electron:build",
     "electron:dev": "wait-on http://localhost:5173 && electron .",
-    "electron:build": "electron-builder"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@futpib/paclient": "github:andrew-ld/paclient#450fc5046e2bb6b3ce7920211ec89bc3748d0463",
@@ -32,43 +32,27 @@
     "@babel/parser": "^7.29.0",
     "@babel/plugin-syntax-jsx": "^7.28.6",
     "@babel/traverse": "^7.29.0",
+    "@electron/fuses": "^2.1.0",
+    "@eslint/js": "^9.21.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
     "concurrently": "^9.2.1",
     "electron": "^39.6.1",
     "electron-builder": "^26.8.1",
+    "eslint": "^9.21.0",
+    "eslint-plugin-import-x": "^4.16.2",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-unicorn": "^63.0.0",
+    "globals": "^15.15.0",
     "postcss": "^8.5.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-scan": "^0.5.3",
     "vite": "^7.3.1",
     "wait-on": "^9.0.4"
-  },
-  "build": {
-    "appId": "com.electron.${name}",
-    "productName": "lutris gamepad ui",
-    "files": [
-      "dist/**/*",
-      "electron.cjs",
-      "electron_preload.cjs",
-      "package.json",
-      "lutris_wrapper.sh",
-      "lutris_wrapper.py",
-      "src_backend/**/*"
-    ],
-    "asarUnpack": [
-      "lutris_wrapper.sh",
-      "lutris_wrapper.py",
-      "electron_preload.cjs"
-    ],
-    "directories": {
-      "output": "release"
-    },
-    "linux": {
-      "target": "AppImage",
-      "category": "game",
-      "icon": "src_frontend/resources/icon.svg"
-    }
   }
 }

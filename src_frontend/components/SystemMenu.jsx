@@ -1,20 +1,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLutris } from "../contexts/LutrisContext";
+
+import { useLutrisActions } from "../contexts/LutrisContext";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
+import { useSettingsState } from "../contexts/SettingsContext";
 import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
-import "../styles/SystemMenu.css";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import * as api from "../utils/ipc";
-import { playActionSound } from "../utils/sound";
+
 import About from "./About";
 import BluetoothMenu from "./BluetoothMenu";
 import ConfirmationDialog from "./ConfirmationDialog";
+import DisplaySettings from "./DisplaySettings";
 import LegendaContainer from "./LegendaContainer";
+import LutrisSettingsFlow from "./LutrisSettingsFlow";
 import RowBasedMenu from "./RowBasedMenu";
 import SettingsMenu from "./SettingsMenu";
 import VolumeControl from "./VolumeControl";
-import { useSettingsState } from "../contexts/SettingsContext";
+
+import "../styles/SystemMenu.css";
 
 const PowerIcon = () => (
   <svg
@@ -43,11 +48,12 @@ const SystemMenu = () => {
   const { showToast } = useToastActions();
   const { isModalOpen } = useModalState();
   const { settings } = useSettingsState();
+  const playActionSound = usePlayButtonActionSound();
 
-  const menuRef = useRef(null);
-  const menuPowerButtonRef = useRef(null);
+  const menuReference = useRef(null);
+  const menuPowerButtonReference = useRef(null);
 
-  const { fetchGames } = useLutris();
+  const { fetchGames } = useLutrisActions();
 
   const openAudioSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <VolumeControl onClose={hideThisModal} />);
@@ -56,6 +62,11 @@ const SystemMenu = () => {
 
   const openBluetoothSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <BluetoothMenu onClose={hideThisModal} />);
+    setIsOpen(false);
+  }, [showModal]);
+
+  const openDisplaySettingsModal = useCallback(() => {
+    showModal((hideThisModal) => <DisplaySettings onClose={hideThisModal} />);
     setIsOpen(false);
   }, [showModal]);
 
@@ -77,6 +88,13 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal]);
 
+  const openLutrisSettingsModal = useCallback(() => {
+    showModal((hideThisModal) => (
+      <LutrisSettingsFlow onClose={hideThisModal} />
+    ));
+    setIsOpen(false);
+  }, [showModal]);
+
   const menuItems = useMemo(
     () => [
       { label: t("Reload Library"), action: reloadLibraryAction },
@@ -89,8 +107,16 @@ const SystemMenu = () => {
         action: openSettingsModal,
       },
       {
+        label: t("Lutris Settings"),
+        action: openLutrisSettingsModal,
+      },
+      {
         label: t("Audio Settings"),
         action: openAudioSettingsModal,
+      },
+      {
+        label: t("Display Settings"),
+        action: openDisplaySettingsModal,
       },
       {
         label: t("Bluetooth Settings"),
@@ -115,7 +141,7 @@ const SystemMenu = () => {
         label: t("Generate Bug Report"),
         action: () => api.createBugReportFile(),
         firstConfirm: t(
-          "Are you sure you want to generate the bug report file?"
+          "Are you sure you want to generate the bug report file?",
         ),
       },
       {
@@ -129,14 +155,14 @@ const SystemMenu = () => {
     [
       reloadLibraryAction,
       openAudioSettingsModal,
+      openDisplaySettingsModal,
       openAboutModal,
       openBluetoothSettingsModal,
       openSettingsModal,
-      reloadLibraryAction,
-      openAudioSettingsModal,
+      openLutrisSettingsModal,
       t,
       settings.doubleConfirmPowerManagement,
-    ]
+    ],
   );
 
   const openConfirmation = useCallback(
@@ -155,7 +181,7 @@ const SystemMenu = () => {
         />
       ));
     },
-    [showModal]
+    [showModal],
   );
 
   const handleAction = useCallback(
@@ -169,14 +195,14 @@ const SystemMenu = () => {
               title: item.secondConfirm,
               description: t("This action is final and cannot be undone."),
             },
-            item.action
+            item.action,
           );
         };
 
         openConfirmation(
           { title: item.firstConfirm },
           secondConfirmAction,
-          false
+          false,
         );
       } else if (item.firstConfirm) {
         openConfirmation({ title: item.firstConfirm }, item.action);
@@ -184,20 +210,20 @@ const SystemMenu = () => {
         item.action();
       }
     },
-    [openConfirmation, t]
+    [openConfirmation, t],
   );
 
   useEffect(() => {
     if (isOpen) {
-      menuPowerButtonRef.current?.focus();
+      menuPowerButtonReference.current?.focus();
     } else {
-      menuPowerButtonRef.current?.blur();
+      menuPowerButtonReference.current?.blur();
     }
   }, [isOpen]);
 
   const toggleMenu = useCallback(() => {
-    setIsOpen((prev) => {
-      const isOpening = !prev;
+    setIsOpen((previous) => {
+      const isOpening = !previous;
       return isOpening;
     });
   }, []);
@@ -210,29 +236,33 @@ const SystemMenu = () => {
         setIsOpen(false);
       }
     },
-    [handleAction]
+    [handleAction],
   );
 
   useGlobalShortcut([
     {
       key: "Y",
-      action: () => {
+      action: useCallback(() => {
         playActionSound();
         toggleMenu();
-      },
+      }, [playActionSound, toggleMenu]),
       active: !isModalOpen,
     },
   ]);
 
   useEffect(() => {
-    window.addEventListener("toggle-system-menu", toggleMenu);
-    return () => window.removeEventListener("toggle-system-menu", toggleMenu);
+    globalThis.addEventListener("toggle-system-menu", toggleMenu);
+    return () =>
+      globalThis.removeEventListener("toggle-system-menu", toggleMenu);
   }, [toggleMenu]);
 
   useEffect(() => {
     if (!isOpen) return;
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (
+        menuReference.current &&
+        !menuReference.current.contains(event.target)
+      ) {
         setIsOpen(false);
       }
     };
@@ -255,7 +285,7 @@ const SystemMenu = () => {
       { button: "A", label: t("Select"), onClick: handleSelect },
       { button: "B", label: t("Back"), onClick: closeMenuCallback },
     ],
-    [handleSelect, closeMenuCallback, t]
+    [handleSelect, closeMenuCallback, t],
   );
 
   const renderMenuItem = useCallback(
@@ -269,13 +299,13 @@ const SystemMenu = () => {
         {item.label}
       </div>
     ),
-    [handleAction]
+    [handleAction],
   );
 
   return (
-    <div className="system-menu-container" ref={menuRef}>
+    <div className="system-menu-container" ref={menuReference}>
       <button
-        ref={menuPowerButtonRef}
+        ref={menuPowerButtonReference}
         className="system-menu-toggle"
         onClick={toggleMenu}
         aria-label="Open System Menu"

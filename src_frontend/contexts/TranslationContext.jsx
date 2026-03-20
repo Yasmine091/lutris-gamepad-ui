@@ -5,9 +5,10 @@ import {
   useEffect,
   useState,
 } from "react";
+
+import { useIsMounted } from "../hooks/useIsMounted";
 import * as ipc from "../utils/ipc";
 import { applyReplacements } from "../utils/string";
-import { useIsMounted } from "../hooks/useIsMounted";
 
 const TranslationContext = createContext({
   t: (key, replacements) => applyReplacements(key, replacements),
@@ -23,7 +24,7 @@ async function loadPackagedLocales() {
       const langCode = path.split(".").at(-2);
       const module = await importer();
       return [langCode, module.default];
-    }
+    },
   );
   return new Map(await Promise.all(localePromises));
 }
@@ -45,7 +46,7 @@ function mergeLocales(base, target) {
   const result = {};
 
   for (const [ns, strings] of Object.entries(base)) {
-    result[ns] = { ...strings, ...(target[ns] || {}) };
+    result[ns] = { ...strings, ...target[ns] };
   }
 
   return result;
@@ -79,8 +80,8 @@ export const TranslationProvider = ({ children }) => {
       }
     };
 
-    loadTranslations().catch((e) => {
-      ipc.logError("unable to load translations", e);
+    loadTranslations().catch((error) => {
+      ipc.logError("unable to load translations", error);
     });
   }, [isMounted]);
 
@@ -88,15 +89,14 @@ export const TranslationProvider = ({ children }) => {
     (key, replacements, filename) => {
       let result;
 
-      if (filename && translations && translations[filename]) {
-        result = translations[filename][key] || key;
-      } else {
-        result = key;
-      }
+      result =
+        filename && translations && translations[filename]
+          ? translations[filename][key] || key
+          : key;
 
       return applyReplacements(result, replacements);
     },
-    [translations]
+    [translations],
   );
 
   return (

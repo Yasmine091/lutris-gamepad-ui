@@ -1,16 +1,19 @@
 import { useMemo, useCallback, useEffect, useRef } from "react";
+
 import {
   useBluetoothState,
   useBluetoothActions,
 } from "../contexts/BluetoothContext";
 import { useModalActions } from "../contexts/ModalContext";
-import LegendaContainer from "./LegendaContainer";
-import RowBasedMenu from "./RowBasedMenu";
+import { useTranslation } from "../contexts/TranslationContext";
+
+import ConfirmationDialog from "./ConfirmationDialog";
+import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import LoadingIndicator from "./LoadingIndicator";
-import ConfirmationDialog from "./ConfirmationDialog";
+import RowBasedMenu from "./RowBasedMenu";
+
 import "../styles/BluetoothMenu.css";
-import { useTranslation } from "../contexts/TranslationContext";
 
 export const BluetoothMenuFocusId = "BluetoothMenu";
 
@@ -56,33 +59,37 @@ const BluetoothMenu = ({ onClose }) => {
         />
       ));
     },
-    [showModal, connectDevice, disconnectDevice, t]
+    [showModal, connectDevice, disconnectDevice, t],
   );
 
   const handleAction = useCallback(
     (actionName, item) => {
       switch (actionName) {
-        case "B":
+        case "B": {
           onClose();
           break;
-        case "A":
+        }
+        case "A": {
           if (item?.action) {
             item.action();
           }
           break;
-        case "X":
+        }
+        case "X": {
           if (isDiscovering) {
             stopDiscovery();
           } else {
             startDiscovery();
           }
           break;
-        case "Y":
+        }
+        case "Y": {
           forceRefresh();
           break;
+        }
       }
     },
-    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh]
+    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh],
   );
 
   const menuItems = useMemo(() => {
@@ -97,9 +104,8 @@ const BluetoothMenu = ({ onClose }) => {
         isAdapter: true,
       }));
 
-    const deviceItems = devices
-      .slice()
-      .sort((a, b) => {
+    const deviceItems = [...devices]
+      .toSorted((a, b) => {
         if (a.isConnected !== b.isConnected) return a.isConnected ? -1 : 1;
         if (a.isPaired !== b.isPaired) return a.isPaired ? -1 : 1;
         return (a.name || a.address).localeCompare(b.name || b.address);
@@ -117,11 +123,15 @@ const BluetoothMenu = ({ onClose }) => {
 
   const renderItem = useCallback(
     (item, isFocused, onMouseEnter) => {
-      const actionButtonLabel = item.isAdapter
-        ? t("Power On")
-        : item.device.isConnected
-        ? t("Disconnect")
-        : t("Connect");
+      let actionButtonLabel;
+
+      if (item.isAdapter) {
+        actionButtonLabel = t("Power On");
+      } else {
+        actionButtonLabel = item.device.isConnected
+          ? t("Disconnect")
+          : t("Connect");
+      }
 
       return (
         <FocusableRow
@@ -155,7 +165,7 @@ const BluetoothMenu = ({ onClose }) => {
         </FocusableRow>
       );
     },
-    [t]
+    [t],
   );
 
   const legendItems = useMemo(
@@ -175,7 +185,7 @@ const BluetoothMenu = ({ onClose }) => {
       { button: "Y", label: t("Refresh"), onClick: forceRefresh },
       { button: "B", label: t("Close"), onClick: onClose },
     ],
-    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh, t]
+    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh, t],
   );
 
   useEffect(() => {
@@ -191,30 +201,39 @@ const BluetoothMenu = ({ onClose }) => {
   }, [isDiscovering, stopDiscovery]);
 
   return (
-    <div className="bt-menu-container">
-      <LegendaContainer legendItems={legendItems}>
-        <div className="bt-menu-content">
-          <h2 className="bt-menu-title">{t("Bluetooth Settings")}</h2>
-          {isLoading && !isDiscovering ? (
-            <LoadingIndicator />
-          ) : (
-            <RowBasedMenu
-              items={menuItems}
-              renderItem={renderItem}
-              onAction={handleAction}
-              focusId={BluetoothMenuFocusId}
-              itemKey={(item) => item.id}
-              onFocusChange={(item) => {
-                currentMenuItem.current = item;
-              }}
-              emptyMessage={t(
-                "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery."
-              )}
-            />
-          )}
+    <DialogLayout
+      title={t("Bluetooth Settings")}
+      legendItems={legendItems}
+      maxWidth="600px"
+    >
+      {isLoading && !isDiscovering ? (
+        <div
+          style={{
+            padding: "24px 0",
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <LoadingIndicator />
         </div>
-      </LegendaContainer>
-    </div>
+      ) : (
+        <RowBasedMenu
+          items={menuItems}
+          renderItem={renderItem}
+          onAction={handleAction}
+          focusId={BluetoothMenuFocusId}
+          itemKey={(item) => item.id}
+          onFocusChange={(item) => {
+            currentMenuItem.current = item;
+          }}
+          emptyMessage={t(
+            "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.",
+          )}
+        />
+      )}
+    </DialogLayout>
   );
 };
 

@@ -1,6 +1,7 @@
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
+
 const { app } = require("electron");
-const fs = require("fs");
 
 function getAppHomeDir() {
   const result = path.join(app.getPath("home"), ".local", "lutris-gamepad-ui");

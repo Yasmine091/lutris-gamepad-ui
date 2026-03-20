@@ -1,8 +1,10 @@
+const { getAppConfig } = require("./config_manager.cjs");
 const { getSessionBus } = require("./dbus_manager.cjs");
 const {
   getRemoteDesktopSessionHandle,
   setRemoteDesktopSessionHandle,
 } = require("./state.cjs");
+const { getKvStoreValue, setKvStoreValue } = require("./storage_kv.cjs");
 const {
   logInfo,
   logError,
@@ -10,8 +12,6 @@ const {
   debounce,
   toastError,
 } = require("./utils.cjs");
-const { getKvStoreValue, setKvStoreValue } = require("./storage_kv.cjs");
-const { getAppConfig } = require("./config_manager.cjs");
 
 const PORTAL_DESTINATION = "org.freedesktop.portal.Desktop";
 const PORTAL_PATH = "/org/freedesktop/portal/desktop";
@@ -46,11 +46,17 @@ function _getBus() {
 
 function invoke(bus, parameters) {
   return new Promise((resolve, reject) => {
-    bus.invoke(parameters, (err, result) => {
-      if (err) {
-        logError("DBus invocation failed for member:", parameters.member, err);
+    bus.invoke(parameters, (error, result) => {
+      if (error) {
+        logError(
+          "DBus invocation failed for member:",
+          parameters.member,
+          error,
+        );
         return reject(
-          new Error(`${parameters.member} call failed: ${JSON.stringify(err)}`),
+          new Error(
+            `${parameters.member} call failed: ${JSON.stringify(error)}`,
+          ),
         );
       }
       resolve(result);
@@ -81,22 +87,22 @@ async function _portalRequest(bus, parameters) {
     if (onResponse) {
       bus.connection.removeListener("message", onResponse);
     }
-    bus.removeMatch(signalMatchRule, (err) => {
-      if (err) {
+    bus.removeMatch(signalMatchRule, (error) => {
+      if (error) {
         logWarn(
           `Failed to remove DBus signal match rule: ${signalMatchRule}`,
-          err,
+          error,
         );
       }
     });
   };
 
   return new Promise((resolve, reject) => {
-    onResponse = (msg) => {
-      if (msg.path === requestHandle && msg.member === "Response") {
+    onResponse = (message) => {
+      if (message.path === requestHandle && message.member === "Response") {
         cleanup();
 
-        const [responseCode, results] = msg.body;
+        const [responseCode, results] = message.body;
 
         logInfo(
           "Received portal response signal for:",
@@ -114,11 +120,13 @@ async function _portalRequest(bus, parameters) {
       }
     };
 
-    bus.addMatch(signalMatchRule, (err) => {
-      if (err) {
+    bus.addMatch(signalMatchRule, (error) => {
+      if (error) {
         cleanup();
         return reject(
-          new Error(`Failed to add signal match for ${requestHandle}: ${err}`),
+          new Error(
+            `Failed to add signal match for ${requestHandle}: ${error}`,
+          ),
         );
       }
       bus.connection.on("message", onResponse);
@@ -228,13 +236,13 @@ async function _startRemoteDesktopSession(restoreToken) {
     logInfo("Portal returned restore token after start:", newRestoreToken);
 
     if (newRestoreToken) {
-      if (newRestoreToken !== restoreToken) {
+      if (newRestoreToken === restoreToken) {
+        logInfo("Restore token remains unchanged.");
+      } else {
         logInfo(
           "New restore token received differs from the old one. Updating storage.",
         );
         setRemoteDesktopRestoreToken(newRestoreToken);
-      } else {
-        logInfo("Restore token remains unchanged.");
       }
     } else {
       logWarn(
@@ -287,18 +295,18 @@ async function startRemoteDesktopSession() {
           logInfo("Attempting to restore session with token:", restoreToken);
           await _startRemoteDesktopSession(restoreToken);
           return;
-        } catch (e) {
+        } catch (error) {
           logError(
             "Failed to restore remote desktop session with existing token:",
-            e,
+            error,
           );
         }
       }
 
       logInfo("Starting fresh remote desktop session.");
       await _startRemoteDesktopSession();
-    } catch (e) {
-      logError("Failed to start remote desktop session:", e);
+    } catch (error) {
+      logError("Failed to start remote desktop session:", error);
     } finally {
       sessionInitializationPromise = null;
     }
@@ -311,8 +319,8 @@ async function stopRemoteDesktopSession() {
   if (sessionInitializationPromise) {
     try {
       await sessionInitializationPromise;
-    } catch (e) {
-      logError("sessionInitializationPromise fail", e);
+    } catch (error) {
+      logError("sessionInitializationPromise fail", error);
     }
   }
 
@@ -329,16 +337,16 @@ async function stopRemoteDesktopSession() {
       member: "Close",
     });
     logInfo("Remote desktop session closed successfully.");
-  } catch (err) {
-    logWarn("Failed to close session handle:", sessionHandle, err);
+  } catch (error) {
+    logWarn("Failed to close session handle:", sessionHandle, error);
   } finally {
     setRemoteDesktopSessionHandle(null);
   }
 }
 
 const releaseAltDebounced = debounce(() => {
-  _releaseKey(KEYCODES.Alt_L).catch((e) => {
-    logError("Unable to release Alt key:", e);
+  _releaseKey(KEYCODES.Alt_L).catch((error) => {
+    logError("Unable to release Alt key:", error);
   });
 }, ALT_TAB_TIMEOUT_MS);
 

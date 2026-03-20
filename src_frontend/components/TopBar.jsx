@@ -1,24 +1,28 @@
-import { useState, useEffect } from "react";
-import { useInput } from "../contexts/InputContext";
-import { useAudio } from "../contexts/AudioContext";
-import "../styles/TopBar.css";
-import { useTranslation } from "../contexts/TranslationContext";
+import { useState, useEffect, useRef } from "react";
+
 import packageJson from "../../package.json";
+import { useAudio } from "../contexts/AudioContext";
+import { useInput } from "../contexts/InputContext";
+import { useTranslation } from "../contexts/TranslationContext";
+
+import "../styles/TopBar.css";
 
 const TopBar = () => {
   const { t } = useTranslation();
   const { gamepadCount } = useInput();
   const { volume, isMuted, isLoading: audioIsLoading } = useAudio();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [currentTime, setCurrentTime] = useState("");
+  const timeReference = useRef(null);
 
   useEffect(() => {
     const updateClock = () => {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, "0");
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-      const seconds = String(now.getSeconds()).padStart(2, "0");
-      setCurrentTime(`${hours}:${minutes}:${seconds}`);
+      if (timeReference.current) {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        const seconds = String(now.getSeconds()).padStart(2, "0");
+        timeReference.current.textContent = `${hours}:${minutes}:${seconds}`;
+      }
     };
 
     updateClock();
@@ -28,15 +32,15 @@ const TopBar = () => {
       setIsOnline(navigator.onLine);
     };
 
-    window.addEventListener("online", updateOnlineStatus);
-    window.addEventListener("offline", updateOnlineStatus);
+    globalThis.addEventListener("online", updateOnlineStatus);
+    globalThis.addEventListener("offline", updateOnlineStatus);
 
     return () => {
       clearInterval(timerId);
-      window.removeEventListener("online", updateOnlineStatus);
-      window.removeEventListener("offline", updateOnlineStatus);
+      globalThis.removeEventListener("online", updateOnlineStatus);
+      globalThis.removeEventListener("offline", updateOnlineStatus);
     };
-  }, [setIsOnline, setCurrentTime]);
+  }, []);
 
   const getVolumeIcon = () => {
     if (isMuted || volume === 0) return "🔇";
@@ -52,7 +56,7 @@ const TopBar = () => {
   return (
     <div className="top-bar">
       <div className="top-bar-content">
-        <span className="top-bar-item top-bar-time">{currentTime}</span>
+        <span className="top-bar-item top-bar-time" ref={timeReference}></span>
         <span className="top-bar-item top-bar-separator">|</span>
         <span className="top-bar-item top-bar-gamepads">
           🎮 {gamepadCount > 0 ? gamepadCount : "N/A"}

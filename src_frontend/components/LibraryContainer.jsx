@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useLutris } from "../contexts/LutrisContext";
+import { useLutris, useLutrisActions } from "../contexts/LutrisContext";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
 import GameLibrary from "./GameLibrary";
 import LoadingIndicator from "./LoadingIndicator";
 import ControlsOverlay from "./ControlsOverlay";
 import OnScreenKeyboard from "./OnScreenKeyboard";
-import { playActionSound } from "../utils/sound";
+import { playButtonActionSound as playActionSound } from "../utils/sound";
 import { toggleWindowShow } from "../utils/ipc";
 import ConfirmationDialog from "./ConfirmationDialog";
 import { useScopedInput } from "../hooks/useScopedInput";
@@ -18,13 +18,8 @@ export const LibraryContainerFocusID = "LibraryContainer";
 const LibraryContainer = () => {
   const { t } = useTranslation();
   const { settings } = useSettingsState();
-  const {
-    games,
-    loading,
-    runningGame,
-    launchGame,
-    closeRunningGame,
-  } = useLutris();
+  const { games, loading, runningGame } = useLutris();
+  const { launchGame, closeRunningGame } = useLutrisActions();
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
   const [searchQuery, setSearchQuery] = useState("");

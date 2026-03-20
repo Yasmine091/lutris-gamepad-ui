@@ -1,15 +1,17 @@
 import { useMemo, useCallback } from "react";
-import LegendaContainer from "./LegendaContainer";
-import { openExternalLink } from "../utils/ipc";
+
 import { useTranslation } from "../contexts/TranslationContext";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
-import "../styles/UpdateDialog.css";
-import { playActionSound } from "../utils/sound";
+import { openExternalLink } from "../utils/ipc";
+
+import DialogLayout from "./DialogLayout";
 
 export const UpdateDialogFocusId = "UpdateDialog";
 
 const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
   const { t } = useTranslation();
+  const playActionSound = usePlayButtonActionSound();
 
   const handleOpenLink = useCallback(() => {
     openExternalLink(releaseUrl);
@@ -23,17 +25,19 @@ const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
   const inputHandler = useCallback(
     (input) => {
       switch (input.name) {
-        case "A":
+        case "A": {
           playActionSound();
           handleOpenLink();
           break;
-        case "B":
+        }
+        case "B": {
           playActionSound();
           handleClose();
           break;
+        }
       }
     },
-    [handleOpenLink, handleClose]
+    [handleOpenLink, handleClose, playActionSound],
   );
 
   useScopedInput(inputHandler, UpdateDialogFocusId);
@@ -43,25 +47,28 @@ const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
       { button: "A", label: t("Go to Downloads"), onClick: handleOpenLink },
       { button: "B", label: t("Later"), onClick: handleClose },
     ],
-    [handleOpenLink, handleClose, t]
+    [handleOpenLink, handleClose, t],
   );
 
   return (
-    <div className="update-dialog-container">
-      <LegendaContainer legendItems={legendItems}>
-        <div className="update-dialog-content">
-          <h2 className="update-dialog-title">{t("Update Available")}</h2>
-          <p className="update-dialog-description">
-            {t("A new version, {{version}}, is available for download.", {
-              version: newVersion,
-            })}
-          </p>
-          <button className="update-dialog-button" onClick={handleOpenLink}>
-            {t("Go to Downloads")}
-          </button>
-        </div>
-      </LegendaContainer>
-    </div>
+    <DialogLayout
+      title={t("Update Available")}
+      description={t("A new version, {{version}}, is available for download.", {
+        version: newVersion,
+      })}
+      legendItems={legendItems}
+      maxWidth="450px"
+    >
+      <div className="modal-buttons-group">
+        <button
+          className="modal-button focused"
+          style={{ width: "100%" }}
+          onClick={handleOpenLink}
+        >
+          {t("Go to Downloads")}
+        </button>
+      </div>
+    </DialogLayout>
   );
 };
 

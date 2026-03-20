@@ -1,11 +1,13 @@
 import { useMemo, useCallback, useState } from "react";
-import LegendaContainer from "./LegendaContainer";
-import RowBasedMenu from "./RowBasedMenu";
-import FocusableRow from "./FocusableRow";
+
 import packageJson from "../../package.json";
-import "../styles/About.css";
-import { openExternalLink } from "../utils/ipc";
 import { useTranslation } from "../contexts/TranslationContext";
+import { openExternalLink } from "../utils/ipc";
+
+import DialogLayout from "./DialogLayout";
+import FocusableRow from "./FocusableRow";
+import RowBasedMenu from "./RowBasedMenu";
+import "../styles/About.css";
 
 export const AboutFocusId = "About";
 
@@ -24,7 +26,7 @@ const About = ({ onClose }) => {
       },
       { label: t("License"), value: packageJson.license },
     ],
-    [t]
+    [t],
   );
 
   const handleAction = useCallback(
@@ -36,7 +38,7 @@ const About = ({ onClose }) => {
         openExternalLink(item.value);
       }
     },
-    [onClose]
+    [onClose],
   );
 
   const handleFocusChange = useCallback((item) => {
@@ -88,21 +90,20 @@ const About = ({ onClose }) => {
   }, [focusedItem, onClose, t]);
 
   return (
-    <div className="about-container">
-      <LegendaContainer legendItems={legendItems}>
-        <div className="about-header">
-          <h2 className="about-title">Lutris Gamepad UI</h2>
-          <p className="about-description">{packageJson.description}</p>
-        </div>
-        <RowBasedMenu
-          items={menuItems}
-          renderItem={renderItem}
-          onAction={handleAction}
-          focusId={AboutFocusId}
-          onFocusChange={handleFocusChange}
-        />
-      </LegendaContainer>
-    </div>
+    <DialogLayout
+      title="Lutris Gamepad UI"
+      description={packageJson.description}
+      legendItems={legendItems}
+      maxWidth="600px"
+    >
+      <RowBasedMenu
+        items={menuItems}
+        renderItem={renderItem}
+        onAction={handleAction}
+        focusId={AboutFocusId}
+        onFocusChange={handleFocusChange}
+      />
+    </DialogLayout>
   );
 };
 

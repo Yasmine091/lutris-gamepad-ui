@@ -1,9 +1,11 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
-import { useScopedInput } from "../hooks/useScopedInput";
-import "../styles/OnScreenKeyboard.css";
-import { playActionSound } from "../utils/sound";
-import LegendaContainer from "./LegendaContainer";
+
 import { useTranslation } from "../contexts/TranslationContext";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../hooks/useScopedInput";
+
+import DialogLayout from "./DialogLayout";
+import "../styles/OnScreenKeyboard.css";
 
 export const OnScreenKeyboardFocusID = "OnScreenKeyboard";
 
@@ -11,21 +13,22 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
+  const playActionSound = usePlayButtonActionSound();
 
-  const focusCoordsRef = useRef(focusCoords);
-  const onConfirmRef = useRef(onConfirm);
-  const onCloseRef = useRef(onClose);
+  const focusCoordsReference = useRef(focusCoords);
+  const onConfirmReference = useRef(onConfirm);
+  const onCloseReference = useRef(onClose);
 
   useEffect(() => {
-    focusCoordsRef.current = focusCoords;
+    focusCoordsReference.current = focusCoords;
   }, [focusCoords]);
 
   useEffect(() => {
-    onConfirmRef.current = onConfirm;
+    onConfirmReference.current = onConfirm;
   }, [onConfirm]);
 
   useEffect(() => {
-    onCloseRef.current = onClose;
+    onCloseReference.current = onClose;
   }, [onClose]);
 
   const keyLayout = useMemo(
@@ -57,21 +60,26 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
       if (typeof keyId !== "string") return;
 
       switch (keyId) {
-        case "Backspace":
-          setInputValue((prev) => prev.slice(0, -1));
+        case "Backspace": {
+          setInputValue((previous) => previous.slice(0, -1));
           break;
-        case "Space":
-          setInputValue((prev) => prev + " ");
+        }
+        case "Space": {
+          setInputValue((previous) => previous + " ");
           break;
-        case "Enter":
-          onConfirmRef.current(inputValue);
+        }
+        case "Enter": {
+          onConfirmReference.current(inputValue);
           break;
-        case "Close":
-          onCloseRef.current();
+        }
+        case "Close": {
+          onCloseReference.current();
           break;
-        default:
-          setInputValue((prev) => prev + keyId);
+        }
+        default: {
+          setInputValue((previous) => previous + keyId);
           break;
+        }
       }
     },
     [inputValue],
@@ -83,10 +91,10 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
         case "UP":
         case "DOWN":
         case "LEFT":
-        case "RIGHT":
-          setFocusCoords((prev) => {
-            const originalCoords = { ...prev };
-            let { x, y } = prev;
+        case "RIGHT": {
+          setFocusCoords((previous) => {
+            const originalCoords = { ...previous };
+            let { x, y } = previous;
 
             if (input.name === "UP") y = Math.max(0, y - 1);
             if (input.name === "DOWN")
@@ -106,42 +114,48 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
             return { x, y };
           });
           break;
-        case "A":
+        }
+        case "A": {
           playActionSound();
           const keyObject =
-            keyLayout[focusCoordsRef.current.y][focusCoordsRef.current.x];
+            keyLayout[focusCoordsReference.current.y][
+              focusCoordsReference.current.x
+            ];
           const keyId =
             typeof keyObject === "string" ? keyObject : keyObject.id;
           handleKeyPress(keyId);
           break;
-        case "X":
+        }
+        case "X": {
           playActionSound();
-          onConfirmRef.current(inputValue);
+          onConfirmReference.current(inputValue);
           break;
-        case "B":
+        }
+        case "B": {
           playActionSound();
-          onCloseRef.current();
+          onCloseReference.current();
           break;
+        }
       }
     },
-    [handleKeyPress, keyLayout, inputValue],
+    [handleKeyPress, keyLayout, inputValue, playActionSound],
   );
 
   useScopedInput(inputHandler, OnScreenKeyboardFocusID);
 
   const onSelectCallback = useCallback(() => {
     const keyObject =
-      keyLayout[focusCoordsRef.current.y][focusCoordsRef.current.x];
+      keyLayout[focusCoordsReference.current.y][focusCoordsReference.current.x];
     const keyId = typeof keyObject === "string" ? keyObject : keyObject.id;
     handleKeyPress(keyId);
   }, [handleKeyPress, keyLayout]);
 
   const onConfirmCallback = useCallback(() => {
-    onConfirmRef.current(inputValue);
+    onConfirmReference.current(inputValue);
   }, [inputValue]);
 
   const onCloseCallback = useCallback(() => {
-    onCloseRef.current();
+    onCloseReference.current();
   }, []);
 
   const legendItems = useMemo(
@@ -162,42 +176,40 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   );
 
   return (
-    <div className="osk-container" tabIndex="-1">
-      <LegendaContainer legendItems={legendItems}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div className="osk-input-display">
-            <label className="osk-label">{label}</label>
-            <div className="osk-input-wrapper">
-              <span className="osk-input-value">{inputValue}</span>
-              <span className="osk-cursor" />
-            </div>
-          </div>
-          <div className="osk-layout">
-            {keyLayout.map((row, y) => (
-              <div className="osk-row" key={`row-${y}`}>
-                {row.map((keyObject, x) => {
-                  const isFocused = focusCoords.x === x && focusCoords.y === y;
-                  const isSpecial = typeof keyObject !== "string";
-                  const keyLabel = isSpecial ? keyObject.label : keyObject;
-                  const keyId = isSpecial ? keyObject.id : keyObject;
-                  return (
-                    <button
-                      key={keyId}
-                      className={`osk-key ${isSpecial ? "special" : ""} ${
-                        isFocused ? "focused" : ""
-                      }`}
-                      onClick={() => handleKeyPress(keyId)}
-                    >
-                      {keyLabel}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+    <DialogLayout legendItems={legendItems} maxWidth="800px">
+      <div className="osk-container">
+        <div className="osk-input-display">
+          <label className="osk-label">{label}</label>
+          <div className="osk-input-wrapper">
+            <span className="osk-input-value">{inputValue}</span>
+            <span className="osk-cursor" />
           </div>
         </div>
-      </LegendaContainer>
-    </div>
+        <div className="osk-layout">
+          {keyLayout.map((row, y) => (
+            <div className="osk-row" key={`row-${y}`}>
+              {row.map((keyObject, x) => {
+                const isFocused = focusCoords.x === x && focusCoords.y === y;
+                const isSpecial = typeof keyObject !== "string";
+                const keyLabel = isSpecial ? keyObject.label : keyObject;
+                const keyId = isSpecial ? keyObject.id : keyObject;
+                return (
+                  <button
+                    key={keyId}
+                    className={`osk-key ${isSpecial ? "special" : ""} ${
+                      isFocused ? "focused" : ""
+                    }`}
+                    onClick={() => handleKeyPress(keyId)}
+                  >
+                    {keyLabel}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    </DialogLayout>
   );
 };
 

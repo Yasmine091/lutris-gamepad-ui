@@ -1,6 +1,7 @@
+const packageJson = require("../package.json");
+
 const { getMainWindow } = require("./state.cjs");
 const { logInfo, logError } = require("./utils.cjs");
-const packageJson = require("../package.json");
 
 const REPO_OWNER = "andrew-ld";
 const REPO_NAME = "lutris-gamepad-ui";
@@ -29,13 +30,13 @@ async function checkForUpdates() {
     const releaseInfo = await response.json();
 
     const latestVersion = releaseInfo.tag_name.startsWith("v")
-      ? releaseInfo.tag_name.substring(1)
+      ? releaseInfo.tag_name.slice(1)
       : releaseInfo.tag_name;
 
     const currentVersion = packageJson.version;
 
     logInfo(
-      `Current version: ${currentVersion}, Latest version: ${latestVersion}`
+      `Current version: ${currentVersion}, Latest version: ${latestVersion}`,
     );
 
     if (currentVersion != latestVersion) {

@@ -8,6 +8,7 @@
     var(--hero-selected-growth-spacer) + var(--hero-arrow-lane-spacer)
   );
   margin-bottom: 2.5rem;
+  contain: layout;
 }
 
 .game-shelf-title {
