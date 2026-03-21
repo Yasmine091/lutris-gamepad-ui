@@ -16,9 +16,6 @@ module.exports = {
   electronLanguages: electronLanguages,
   beforeBuild: path.join(__dirname, "electron-builder.beforebuild.cjs"),
   afterPack: path.join(__dirname, "electron-builder.afterpack.cjs"),
-  toolsets: {
-    appimage: "1.0.2",
-  },
   files: [
     "dist/**/*",
     "electron.cjs",
