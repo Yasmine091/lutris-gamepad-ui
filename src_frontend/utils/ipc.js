@@ -37,6 +37,12 @@ export const setBrightness = (brightness) =>
 export const getNightLight = () => globalThis.electronAPI.getNightLight();
 export const setNightLight = (enabled) =>
   globalThis.electronAPI.setNightLight(enabled);
+export const getNightLightSettings = () =>
+  globalThis.electronAPI.getNightLightSettings();
+export const openNightLightSettings = () =>
+  globalThis.electronAPI.openNightLightSettings();
+export const setNightLightSettings = (settings) =>
+  globalThis.electronAPI.setNightLightSettings(settings);
 
 export const logInfo = (...arguments_) =>
   globalThis.electronAPI.log("info", arguments_);

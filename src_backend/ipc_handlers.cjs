@@ -21,6 +21,9 @@ const {
   setBrightness,
   getNightLight,
   setNightLight,
+  getNightLightSettings,
+  openNightLightSettings,
+  setNightLightSettings,
 } = require("./display_manager.cjs");
 const {
   getGames,
@@ -241,6 +244,21 @@ function registerIpcHandlers() {
       );
     }
     await setNightLight(enabled);
+  });
+
+  ipcHandleWithError("get-night-light-settings", async () => {
+    return await getNightLightSettings();
+  });
+
+  ipcHandleWithError("set-night-light-settings", async (_event, settings) => {
+    if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
+      throw new TypeError("Invalid night light settings payload.");
+    }
+    await setNightLightSettings(settings);
+  });
+
+  ipcHandleWithError("open-night-light-settings", async () => {
+    return await openNightLightSettings();
   });
 
   // Logging from Renderer

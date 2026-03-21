@@ -319,19 +319,20 @@
 .hero-featured-action-btn.primary {
   background: linear-gradient(
     120deg,
-    var(--accent-color) 0%,
-    rgba(45, 34, 128, 0.96) 100%
+    color-mix(in srgb, var(--accent-color) 96%, white 4%) 0%,
+    color-mix(in srgb, var(--accent-color) 62%, black 38%) 100%
   );
   border-color: var(--accent-color);
   color: #fff;
-  box-shadow: 0 10px 24px rgba(34, 38, 102, 0.42);
+  box-shadow: 0 10px 24px
+    color-mix(in srgb, var(--accent-color) 34%, transparent);
 }
 
 .hero-featured-action-btn.primary:hover {
   background: linear-gradient(
     120deg,
-    var(--accent-color) 0%,
-    rgba(54, 42, 140, 0.98) 100%
+    color-mix(in srgb, var(--accent-color) 100%, white 0%) 0%,
+    color-mix(in srgb, var(--accent-color) 70%, black 30%) 100%
   );
 }
 

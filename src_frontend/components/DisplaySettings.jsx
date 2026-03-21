@@ -18,6 +18,8 @@ const CONTROL_TYPES = {
   NIGHT_LIGHT: "NIGHT_LIGHT",
 };
 
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
 const DisplaySettings = ({ onClose }) => {
   const { t } = useTranslation();
   const isMounted = useIsMounted();
@@ -74,9 +76,10 @@ const DisplaySettings = ({ onClose }) => {
     fetchSettings();
   }, [fetchSettings]);
 
-  const updateBrightness = useCallback(async () => {
+  const updateBrightness = useCallback(async (nextBrightness = brightness) => {
     if (brightnessError) return;
-    const clamped = Math.max(0, Math.min(100, brightness));
+    const clamped = clamp(nextBrightness, 0, 100);
+    setBrightness(clamped);
     setIsLoading(true);
     try {
       await api.setBrightness(clamped);
@@ -137,7 +140,13 @@ const DisplaySettings = ({ onClose }) => {
         }
       }
     },
-    [brightness, updateBrightness, toggleNightLight, fetchSettings, onClose],
+    [
+      brightness,
+      updateBrightness,
+      toggleNightLight,
+      fetchSettings,
+      onClose,
+    ],
   );
 
   const renderItem = useCallback(
@@ -168,7 +177,12 @@ const DisplaySettings = ({ onClose }) => {
         </FocusableRow>
       );
     },
-    [brightness, nightLight, t, toggleNightLight],
+    [
+      brightness,
+      nightLight,
+      t,
+      toggleNightLight,
+    ],
   );
 
   const legendItems = useMemo(() => {

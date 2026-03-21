@@ -24,12 +24,15 @@ async function spawnGSettings(arguments_) {
   }
 }
 
-async function spawnDdcutil(arguments_) {
+async function spawnDdcutil(arguments_, options = {}) {
+  const { logErrors = true } = options;
   try {
     const { stdout } = await execFilePromise("ddcutil", arguments_);
     return stdout.trim();
   } catch (error) {
-    logError("ddcutil error:", error);
+    if (logErrors) {
+      logError("ddcutil error:", error);
+    }
     throw error;
   }
 }

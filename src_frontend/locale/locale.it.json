@@ -75,9 +75,14 @@
     "Failed to load night light. Check your desktop environment compatibility.": "Failed to load night light. Check your desktop environment compatibility.",
     "Increase": "Increase",
     "Loading Display Settings...": "Loading Display Settings...",
+    "Night Color Settings": "Night Color Settings",
     "Night Light": "Night Light",
+    "Night Temperature": "Night Temperature",
     "No display settings available.": "No display settings available.",
+    "Open": "Open",
     "Reload": "Reload",
+    "Schedule End": "Schedule End",
+    "Schedule Start": "Schedule Start",
     "Update": "Update"
   },
   "components/GameCard.jsx": {

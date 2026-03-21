@@ -55,6 +55,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("set-brightness", brightness),
   getNightLight: () => ipcRenderer.invoke("get-night-light"),
   setNightLight: (enabled) => ipcRenderer.invoke("set-night-light", enabled),
+  getNightLightSettings: () => ipcRenderer.invoke("get-night-light-settings"),
+  openNightLightSettings: () =>
+    ipcRenderer.invoke("open-night-light-settings"),
+  setNightLightSettings: (settings) =>
+    ipcRenderer.invoke("set-night-light-settings", settings),
 
   // System & App
   rebootPC: () => ipcRenderer.send("reboot-pc"),
