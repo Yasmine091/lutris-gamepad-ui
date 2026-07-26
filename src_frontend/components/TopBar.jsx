@@ -20,11 +20,13 @@ const AudioIndicator = () => {
     return "🔊";
   };
 
+  const normalizedVolume = volume === Infinity ? 100 : volume;
+
   return (
     <>
       <span className="top-bar-item top-bar-separator">|</span>
       <span className="top-bar-item top-bar-volume">
-        {getVolumeIcon()} {isMuted ? t("Muted") : `${volume}%`}
+        {getVolumeIcon()} {isMuted ? t("Muted") : `${normalizedVolume}%`}
       </span>
     </>
   );

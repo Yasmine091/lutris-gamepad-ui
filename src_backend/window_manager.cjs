@@ -278,6 +278,14 @@ function createWindow(onWindowClosedCallback) {
     }
   });
 
+  win.on("ready-to-show", () => {
+    win.restore();
+    win.focus();
+    if (fullscreen) {
+      win.setFullScreen(true);
+    }
+  })
+
   win.webContents.once("did-stop-loading", () => {
     initializeThemeManager();
 
