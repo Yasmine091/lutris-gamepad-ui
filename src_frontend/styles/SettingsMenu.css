@@ -1,24 +1,29 @@
-.settings-dialog .dialog-layout-title {
+.settings-dialog .dialog-layout-title,
+.dialog-layout-container:has(.row-based-menu-container) .dialog-layout-title {
   color: var(--text-primary);
 }
 
-.settings-dialog .row-based-menu-list {
+.settings-dialog .row-based-menu-list,
+.dialog-layout-container:has(.row-based-menu-container) .row-based-menu-list {
   padding-top: 6px;
   padding-bottom: 6px;
 }
 
-.settings-dialog .focusable-row {
+.settings-dialog .focusable-row,
+.dialog-layout-container:has(.row-based-menu-container) .focusable-row {
   gap: 1rem;
   background: rgba(255, 255, 255, 0.045);
 }
 
-.settings-dialog .focusable-row:hover:not(.focused) {
+.settings-dialog .focusable-row:hover:not(.focused),
+.dialog-layout-container:has(.row-based-menu-container) .focusable-row:hover:not(.focused) {
   background: rgba(255, 255, 255, 0.075);
 }
 
-.settings-dialog .focusable-row.focused {
-  background: rgba(255, 255, 255, 0.075);
-  border-color: rgba(255, 255, 255, 0.16);
+.settings-dialog .focusable-row.focused,
+.dialog-layout-container:has(.row-based-menu-container) .focusable-row.focused {
+  background: var(--accent-soft);
+  border-color: var(--accent-color);
   transform: none;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
 }
@@ -27,9 +32,10 @@
   display: none;
 }
 
-.settings-dialog .focusable-row.focused .toggle-button {
-  background: rgba(255, 255, 255, 0.11);
-  border-color: rgba(255, 255, 255, 0.2);
+.settings-dialog .focusable-row.focused .toggle-button,
+.dialog-layout-container:has(.row-based-menu-container) .focusable-row.focused .toggle-button {
+  background: transparent;
+  border-color: var(--accent-color);
   color: var(--text-primary);
   box-shadow: none;
 }
@@ -39,10 +45,11 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.settings-dialog .toggle-button {
-  min-height: 38px;
-  min-width: 4.8rem;
-  padding: 7px 12px;
+.settings-dialog .toggle-button,
+.dialog-layout-container:has(.row-based-menu-container) .toggle-button {
+  min-height: 34px;
+  min-width: 4.6rem;
+  padding: 5px 11px;
 }
 
 .zoom-factor-display {

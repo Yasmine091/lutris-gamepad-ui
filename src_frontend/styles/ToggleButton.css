@@ -1,5 +1,5 @@
 .toggle-button {
-  padding: 9px 16px;
+  padding: 6px 13px;
   font-size: 0.82rem;
   font-weight: bold;
   letter-spacing: 0.045em;
@@ -14,8 +14,8 @@
     color 0.2s ease,
     border-color 0.2s ease;
   white-space: nowrap;
-  min-height: 44px;
-  min-width: 5.2rem;
+  min-height: 36px;
+  min-width: 4.8rem;
   text-align: center;
 }
 
