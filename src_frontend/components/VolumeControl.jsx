@@ -313,6 +313,7 @@ const VolumeControl = ({ onClose }) => {
       title={t("Audio Settings")}
       legendItems={legendItems}
       maxWidth="600px"
+      className="settings-dialog"
     >
       {currentDefaultSinkObject && (
         <div className="volume-control-current-sink-display">

@@ -253,6 +253,7 @@ const DisplaySettings = ({ onClose }) => {
       title={t("Display Settings")}
       legendItems={legendItems}
       maxWidth="600px"
+      className="settings-dialog"
     >
       {brightnessError && (
         <p className="display-settings-error-msg">

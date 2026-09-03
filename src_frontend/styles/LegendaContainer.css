@@ -16,8 +16,10 @@
 }
 
 .legenda-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 16px;
+  padding: 12px 20px calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(9, 11, 18, 0.18), rgba(9, 11, 18, 0.42));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   justify-content: center;
   flex-shrink: 0;
@@ -25,7 +27,38 @@
 
 .legenda-items-wrapper {
   display: flex;
-  justify-content: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 16px;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.legenda-items-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.legenda-items-wrapper .button-hint {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 600px) {
+  .legenda-items-wrapper {
+    justify-content: flex-start;
+    gap: 9px 12px;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .legenda-items-wrapper {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-height: 600px) {
+  .legenda-footer {
+    padding-top: 8px;
+  }
 }

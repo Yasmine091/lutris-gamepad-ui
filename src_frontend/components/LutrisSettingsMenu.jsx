@@ -135,6 +135,7 @@ const LutrisSettingsMenu = ({
             isToggledOn={!!item.value}
             labelOn={t("Disable")}
             labelOff={t("Enable")}
+            onClick={() => handleAction("A", item)}
           />
         );
       } else if (
@@ -219,6 +220,7 @@ const LutrisSettingsMenu = ({
       title={currentTitle}
       legendItems={legendItems}
       maxWidth={maxWidth}
+      className="settings-dialog"
     >
       {loading ? (
         <div

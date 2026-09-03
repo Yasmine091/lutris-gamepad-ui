@@ -4,19 +4,22 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--primary-background);
+  background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent-color) 12%, transparent), transparent 45%), rgba(9, 11, 18, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
   color: var(--text-primary);
-  padding: 20px;
+  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+    max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
 }
 
 .crash-dialog-container {
-  background-color: var(--secondary-background);
-  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(30, 35, 50, 0.97), rgba(13, 16, 25, 0.98));
+  border-radius: var(--radius-panel);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.52), 0 1px 0 rgba(255, 255, 255, 0.1) inset;
   max-width: 800px;
   width: 100%;
   max-height: 90vh;
@@ -33,14 +36,18 @@
 }
 
 .crash-dialog-title {
+  font-family: var(--font-display);
   color: var(--accent-color);
-  font-size: 2rem;
+  font-size: clamp(1.7rem, 1.35rem + 1vw, 2.2rem);
+  letter-spacing: -0.045em;
   margin-top: 0;
   margin-bottom: 16px;
 }
 
 .crash-dialog-message {
   font-size: 1.2rem;
+  line-height: 1.5;
+  margin-top: 0;
   color: var(--text-secondary);
   margin-bottom: 24px;
 }
@@ -54,36 +61,44 @@
 }
 
 .crash-dialog-button {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
   color: var(--text-primary);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 12px 20px;
-  border-radius: 6px;
+  padding: 13px 20px;
+  border-radius: var(--radius-control);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: bold;
-  transition: all 0.2s ease;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  min-height: 44px;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease, box-shadow 0.2s ease;
   outline: none;
 }
 
 .crash-dialog-button.focused {
-  background-color: var(--accent-color);
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-deep));
   color: var(--text-primary);
   border-color: var(--accent-color);
-  transform: scale(1.05);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--accent-color) 50%, transparent);
+  transform: scale(1.01);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--accent-color) 18%, transparent);
 }
 
-.crash-dialog-button:hover {
-  transform: scale(1.05);
-  background-color: var(--accent-color);
-  border-color: var(--accent-color);
+.crash-dialog-button:hover:not(.focused) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.crash-dialog-button:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
 }
 
 .crash-dialog-details {
-  background-color: var(--primary-background);
+  background: rgba(9, 11, 18, 0.58);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   padding: 16px;
   text-align: left;
   margin-top: 16px;
@@ -95,4 +110,29 @@
   word-wrap: break-word;
   font-size: 0.9rem;
   color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+  .crash-dialog-overlay {
+    padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+      max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  .crash-dialog-container {
+    max-height: calc(100vh - 20px);
+    border-radius: var(--radius-card);
+  }
+
+  .crash-dialog-container .legenda-content {
+    --legenda-content-padding: 18px 16px;
+  }
+
+  .crash-dialog-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .crash-dialog-button {
+    width: 100%;
+  }
 }

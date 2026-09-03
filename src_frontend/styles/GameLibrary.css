@@ -1,16 +1,44 @@
 .game-library {
-  padding: 2rem 4%;
+  position: relative;
+  padding: 2.5rem clamp(2rem, 5vw, 5.5rem) calc(3rem + env(safe-area-inset-bottom));
   contain: layout;
+  isolation: isolate;
+}
+
+.game-library::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(34rem, 58vh);
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 78% 8%, color-mix(in srgb, var(--accent-color) 13%, transparent), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 72%);
+  opacity: 0.52;
 }
 
 .library-header h1 {
-  font-size: 2rem;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.55rem + 1.25vw, 3rem);
+  letter-spacing: -0.055em;
+  line-height: 1;
   margin-bottom: 0;
   font-weight: bold;
 }
 
 .library-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.library-header::after {
+  content: "";
+  display: block;
+  width: min(22rem, 55vw);
+  height: 1px;
+  margin-top: 1.35rem;
+  background: linear-gradient(90deg, var(--accent-color), rgba(255, 255, 255, 0.08), transparent);
+  opacity: 0.38;
 }
 
 .library-header-row {
@@ -24,12 +52,16 @@
 .library-tabs {
   display: flex;
   flex-wrap: nowrap;
-  gap: 0.5rem;
+  gap: 0.6rem;
   overflow-x: auto;
   overflow-y: visible;
   max-width: 100%;
   padding: 0.25rem 0.2rem 0.5rem;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+
+.library-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .library-tabs-wrap {
@@ -40,44 +72,174 @@
 
 .library-tab {
   flex: 0 0 auto;
+  font-family: var(--font-display);
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: var(--text-secondary);
-  padding: 0.45rem 0.9rem;
+  padding: 0.58rem 1rem;
   border-radius: 999px;
-  font-size: 0.85rem;
-  letter-spacing: 0.03em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+  box-shadow: none;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .library-tab:hover {
-  transform: translateY(-1px) scale(1.015);
   color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .library-tab.active {
-  background: var(--accent-color);
+  background: var(--accent-soft);
   border-color: var(--accent-color);
-  color: #fff;
+  color: var(--text-primary);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
 }
 
 .library-tab:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.65);
-  outline-offset: 2px;
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
 }
 
 .empty-library-message {
   text-align: center;
   margin-top: 10vh;
+  margin-inline: auto;
+  max-width: 42rem;
+  padding: 2rem;
   color: var(--text-secondary);
 }
 
+.empty-library-message::before {
+  content: "✦";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid color-mix(in srgb, var(--accent-color) 55%, transparent);
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-color);
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+}
+
 .empty-library-message h2 {
-  font-size: 1.8rem;
+  margin: 0 0 0.55rem;
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  letter-spacing: -0.04em;
   color: var(--text-primary);
 }
 
 .empty-library-message p {
+  margin: 0;
   font-size: 1.1rem;
+}
+
+@media (max-width: 900px) {
+  .game-library {
+    padding: 1.75rem 1.25rem calc(2.5rem + env(safe-area-inset-bottom));
+  }
+
+  .library-header h1 {
+    font-size: 2rem;
+  }
+
+  .library-header-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 520px) {
+  .game-library {
+    padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
+  }
+
+  .library-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .library-header::after {
+    margin-top: 1rem;
+    width: min(12rem, 60vw);
+  }
+
+  .library-tabs {
+    gap: 0.45rem;
+    scrollbar-width: none;
+  }
+
+  .library-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .library-tab {
+    padding: 0.52rem 0.8rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+  }
+
+  .empty-library-message {
+    margin-top: 6vh;
+    padding: 2.25rem 1.25rem;
+  }
+
+  .empty-library-message h2 {
+    font-size: 1.35rem;
+  }
+
+  .empty-library-message p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .empty-library-message {
+    padding-block: 1.75rem;
+  }
+
+  .empty-library-message::before {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-height: 700px) and (min-width: 901px) {
+  .game-library {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .library-header {
+    margin-bottom: 1.2rem;
+  }
+
+  .library-header::after {
+    margin-top: 0.9rem;
+  }
+
+  .game-shelf {
+    margin-bottom: 1.7rem;
+  }
+}
+
+@media (hover: none) {
+  .library-tab:hover {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .library-tab.active:hover {
+    color: var(--text-primary);
+    background: var(--accent-soft);
+  }
 }

@@ -483,6 +483,7 @@ const SettingsMenu = ({ onClose }) => {
       title={t("Settings")}
       legendItems={legendItems}
       maxWidth="700px"
+      className="settings-dialog"
     >
       <RowBasedMenu
         items={menuItems}

@@ -3,10 +3,27 @@
   height: 100%;
   display: grid;
   place-items: center;
-  background: var(--primary-background);
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent-color) 16%, transparent), transparent 28%),
+    radial-gradient(circle at 15% 100%, rgba(75, 31, 55, 0.1), transparent 34%),
+    var(--primary-background);
 }
 
 .boot-splash-icon {
-  width: 4rem;
-  height: 4rem;
+  width: 3.75rem;
+  height: 3.75rem;
+  filter: drop-shadow(0 0 14px var(--accent-soft));
+  animation: bootIconPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes bootIconPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

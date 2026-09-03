@@ -8,6 +8,10 @@ const { babelPlugin: babelLocalePlugin, vitePlugin: viteLocalePlugin } =
 
 export default defineConfig({
   base: "",
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
   resolve: {
     alias: {
       react: "preact/compat",

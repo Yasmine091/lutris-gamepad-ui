@@ -1,4 +1,4 @@
-const { ipcMain, shell, nativeImage } = require("electron");
+const { app, ipcMain, shell, nativeImage } = require("electron");
 
 const {
   getAudioInfo,
@@ -101,6 +101,10 @@ function registerIpcHandlers() {
     invokeLutris().catch((error) => {
       logError("unable to open lutris", error);
     });
+  });
+
+  ipcOnWithError("quit-app", async () => {
+    app.quit();
   });
 
   ipcOnWithError("toggle-window-show", async () => toggleWindowShow());

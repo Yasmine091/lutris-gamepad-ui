@@ -1,14 +1,22 @@
 .display-settings-label {
-  font-size: 1rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
   color: var(--text-secondary);
   flex-shrink: 0;
   margin-right: 10px;
 }
 
 .display-settings-value {
-  font-size: 1rem;
-  font-weight: bold;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
   color: var(--text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .display-settings-error-msg {

@@ -12,7 +12,9 @@
 
 .update-dialog-title {
   margin: 0 0 12px 0;
-  font-size: 1.5rem;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: -0.04em;
   font-weight: bold;
   color: var(--accent-color);
 }
@@ -25,22 +27,29 @@
 }
 
 .update-dialog-button {
-  background-color: var(--accent-color);
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-deep));
   color: var(--text-primary);
   border: 1px solid transparent;
-  padding: 12px 20px;
-  border-radius: 6px;
+  padding: 13px 20px;
+  border-radius: var(--radius-control);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
   font-weight: bold;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease, box-shadow 0.2s ease;
   outline: none;
   width: 100%;
 }
 
 .update-dialog-button:hover {
-  transform: scale(1.03);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--accent-color) 50%, transparent);
+  filter: brightness(1.06);
+}
+
+.update-dialog-button:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
 }
 
 .update-dialog-container .legenda-content {

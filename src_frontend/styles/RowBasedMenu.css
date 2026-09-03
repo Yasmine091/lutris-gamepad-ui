@@ -10,13 +10,16 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--row-based-menu-list-padding, 10px 24px);
+  padding: var(--row-based-menu-list-padding, 14px clamp(16px, 4vw, 48px));
   scrollbar-width: thin;
-  scrollbar-color: var(--accent-color) transparent;
+  scrollbar-color: color-mix(in srgb, var(--accent-color) 48%, transparent) transparent;
+  scroll-padding-block: 10px;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .row-based-menu-list::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .row-based-menu-list::-webkit-scrollbar-track {
@@ -24,41 +27,41 @@
 }
 
 .row-based-menu-list::-webkit-scrollbar-thumb {
-  background-color: var(--accent-color);
-  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent-color) 48%, transparent);
+  border-radius: 999px;
 }
 
 .row-based-menu-sections {
   display: flex;
   justify-content: center;
-  gap: 24px;
-  margin: 0 24px 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 12px;
+  gap: 8px;
+  margin: 0 clamp(16px, 4vw, 48px) 20px;
+  padding: 0 4px 10px;
   flex-shrink: 0;
 }
 
 .row-based-menu-section {
+  padding: 8px 14px;
+  border-radius: 999px;
   color: var(--text-secondary);
-  font-size: 1rem;
-  transition: color 0.2s ease;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.2s ease, background 0.2s ease;
   position: relative;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.row-based-menu-section:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .row-based-menu-section.active {
+  background: var(--accent-soft);
   color: var(--text-primary);
-  font-weight: bold;
-}
-
-.row-based-menu-section.active::after {
-  content: "";
-  position: absolute;
-  bottom: -13px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: var(--accent-color);
 }
 
 .row-based-menu-empty {
@@ -67,8 +70,41 @@
   align-items: center;
   flex: 1;
   min-height: 150px;
+  width: min(42rem, calc(100% - 2rem));
+  margin: 1rem auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-panel);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018));
   color: var(--text-secondary);
-  font-style: italic;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.45;
   padding: 24px;
   text-align: center;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  .row-based-menu-sections {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: 14px;
+  }
+
+  .row-based-menu-sections::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (hover: none) {
+  .row-based-menu-section:hover {
+    color: var(--text-secondary);
+    background: transparent;
+  }
+
+  .row-based-menu-section.active:hover {
+    color: var(--text-primary);
+    background: var(--accent-soft);
+  }
 }

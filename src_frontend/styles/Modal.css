@@ -4,10 +4,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
+  background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent-color) 6%, transparent), transparent 42%), rgba(3, 5, 10, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   z-index: 3000;
   animation: fadeInModal 0.2s ease-out;
 }
@@ -22,12 +26,40 @@
 }
 
 .modal-content {
-  background-color: var(--secondary-background);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(145deg, #1b2130, #10131d 72%);
+  border-radius: var(--radius-panel);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.56), 0 0 0 1px rgba(255, 255, 255, 0.025) inset;
   max-width: 90vw;
   max-height: 90vh;
+  width: fit-content;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  animation: modalLiftIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: center;
+}
+
+@keyframes modalLiftIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .modal-overlay {
+    padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+      max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  .modal-content {
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
+    border-radius: var(--radius-card);
+  }
 }

@@ -11,9 +11,11 @@
 
 .confirmation-title {
   margin: 0 0 8px 0;
-  font-size: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
   font-weight: bold;
-  line-height: 1.4;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
   color: var(--text-primary);
   white-space: pre-wrap;
 }
@@ -22,6 +24,8 @@
   margin: 0 0 24px 0;
   font-size: 1rem;
   line-height: 1.5;
+  max-width: 34rem;
+  margin-inline: auto;
   color: var(--text-secondary);
   white-space: pre-wrap;
 }
@@ -34,27 +38,36 @@
 }
 
 .confirmation-button {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
   color: var(--text-secondary);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 12px 20px;
-  border-radius: 6px;
+  padding: 13px 20px;
+  border-radius: var(--radius-control);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
   font-weight: bold;
-  transition: all 0.2s ease;
+  min-height: 44px;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease, box-shadow 0.2s ease;
   outline: none;
 }
 
 .confirmation-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
   color: var(--text-primary);
 }
 
 .confirmation-button.focused {
-  background-color: var(--accent-color);
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-deep));
   color: var(--text-primary);
   border-color: var(--accent-color);
-  transform: scale(1.05);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--accent-color) 50%, transparent);
+  transform: scale(1.01);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--accent-color) 18%, transparent);
+}
+
+.confirmation-button:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
 }

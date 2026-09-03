@@ -205,6 +205,7 @@ const BluetoothMenu = ({ onClose }) => {
       title={t("Bluetooth Settings")}
       legendItems={legendItems}
       maxWidth="600px"
+      className="settings-dialog"
     >
       {isLoading && !isDiscovering ? (
         <div

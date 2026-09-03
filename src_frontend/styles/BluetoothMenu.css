@@ -20,24 +20,35 @@
 }
 
 .bt-status-indicator {
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
   flex-shrink: 0;
 }
 
 .bt-status-indicator::before {
-  content: "|";
-  margin-right: 8px;
-  color: var(--text-secondary);
-  opacity: 0.4;
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin: 0 6px 1px 0;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .bt-status-indicator.connected {
   color: #81c784;
+  background: rgba(129, 199, 132, 0.12);
 }
 
 .bt-status-indicator.paired {
-  color: #64b5f6;
+  color: color-mix(in srgb, var(--accent-color) 78%, white 22%);
+  background: var(--accent-soft);
 }
 
 .bt-menu-row-right {
@@ -50,24 +61,54 @@
 }
 
 .bt-menu-action-button {
-  padding: 8px 16px;
-  font-size: 0.9rem;
+  padding: 9px 16px;
+  font-size: 0.82rem;
   font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.1);
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
   color: var(--text-secondary);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   cursor: pointer;
+  min-height: 44px;
   transition:
-    background-color 0.2s ease,
+    background 0.2s ease,
     color 0.2s ease,
     border-color 0.2s ease;
   white-space: nowrap;
 }
 
-.focusable-row:hover .bt-menu-action-button,
 .focusable-row.focused .bt-menu-action-button {
-  background-color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.11);
   color: var(--text-primary);
-  border-color: var(--accent-color);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+.focusable-row:hover:not(.focused) .bt-menu-action-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+@media (max-width: 600px) {
+  .bt-menu-row-content {
+    gap: 8px;
+  }
+
+  .bt-menu-row-right {
+    gap: 8px;
+    padding-left: 8px;
+  }
+
+  .bt-status-indicator {
+    padding: 3px 6px;
+    font-size: 0.68rem;
+  }
+
+  .bt-menu-action-button {
+    padding: 8px 11px;
+    font-size: 0.76rem;
+  }
 }

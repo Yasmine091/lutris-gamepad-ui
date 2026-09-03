@@ -2,6 +2,7 @@ export const getGames = () => globalThis.electronAPI.getGames();
 export const launchGame = (game) => globalThis.electronAPI.launchGame(game.id);
 export const closeGame = (game) => globalThis.electronAPI.closeGame(game.id);
 export const openLutris = () => globalThis.electronAPI.openLutris();
+export const quitApp = () => globalThis.electronAPI.quitApp();
 export const toggleGamePause = () => globalThis.electronAPI.toggleGamePause();
 
 export const rebootPC = () => globalThis.electronAPI.rebootPC();

@@ -1,12 +1,22 @@
 .button-hint {
   display: flex;
   align-items: center;
+  gap: 8px;
   color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .button-hint.clickable {
   cursor: pointer;
+}
+
+.button-hint .button-label {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  line-height: 1.15;
+  text-transform: uppercase;
 }
 
 .button-icon {
@@ -16,7 +26,16 @@
   align-items: center;
   font-weight: bold;
   color: #fff;
-  border: 2px solid #fff;
+  line-height: 1;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.24), 0 1px 0 rgba(255, 255, 255, 0.18) inset;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.button-hint:hover .button-icon,
+.button-hint:focus-within .button-icon {
+  filter: brightness(1.08);
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.26), 0 1px 0 rgba(255, 255, 255, 0.18) inset;
 }
 
 .button-keyboard-a,
@@ -89,8 +108,8 @@
   border-color: #107c10;
 }
 .button-xbox-b {
-  background-color: #e50914;
-  border-color: #e50914;
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
 }
 .button-xbox-x {
   background-color: #0078d4;
@@ -122,8 +141,8 @@
   border-color: #0070d1;
 }
 .button-playstation-b {
-  background-color: #e50914;
-  border-color: #e50914;
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
 }
 .button-playstation-x {
   background-color: #b22383;
@@ -150,7 +169,7 @@
 }
 
 .button-hint.size-large {
-  gap: 10px;
+  gap: 9px;
 }
 .button-hint.size-large .button-icon {
   width: 28px;
@@ -186,7 +205,9 @@
   width: 28px;
 }
 .button-hint.size-large .button-label {
-  font-size: 1rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .button-hint.size-small {
@@ -226,5 +247,5 @@
   width: 24px;
 }
 .button-hint.size-small .button-label {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
 }

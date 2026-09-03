@@ -1,15 +1,33 @@
 :root {
-  --primary-background: #141414;
-  --secondary-background: #181818;
-  --text-primary: #ffffff;
-  --text-secondary: #e5e5e5;
+  color-scheme: dark;
+  --primary-background: #090b12;
+  --secondary-background: #121622;
+  --tertiary-background: #1a2030;
+  --text-primary: #f8f9ff;
+  --text-secondary: #b7bdce;
+  --text-muted: #7f879d;
   --accent-color: #e50914;
-  --top-bar-height: 36px;
+  --accent-deep: color-mix(in srgb, var(--accent-color) 68%, #10131d);
+  --accent-soft: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-panel: 18px;
+  --radius-cover: 12px;
+  --top-bar-height: 44px;
   --game-card-width: 160px;
   --game-card-height: calc(var(--game-card-width) * 4 / 3);
   --font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    "Inter", "Avenir Next", "SF Pro Display", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", ui-sans-serif, sans-serif;
+  --font-display:
+    "Space Grotesk", "Inter", "Avenir Next", ui-rounded, ui-sans-serif,
     sans-serif;
+  accent-color: var(--accent-color);
+}
+
+* {
+  scrollbar-color: color-mix(in srgb, var(--accent-color) 48%, transparent) transparent;
+  scrollbar-width: thin;
 }
 
 * {
@@ -39,10 +57,51 @@ html,
   padding: 0;
   height: 100%;
   width: 100%;
-  background-color: var(--primary-background);
+  background:
+    radial-gradient(circle at 85% -20%, color-mix(in srgb, var(--accent-color) 8%, transparent), transparent 38%),
+    radial-gradient(circle at 0% 100%, rgba(75, 31, 55, 0.08), transparent 34%),
+    var(--primary-background);
   color: var(--text-primary);
   font-family: var(--font-family);
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
   overflow: hidden;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--accent-color);
+  color: var(--text-primary);
 }
 
 .App {
@@ -52,4 +111,55 @@ html,
   flex-direction: column;
   padding-top: var(--top-bar-height);
   box-sizing: border-box;
+  isolation: isolate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --text-secondary: #d5d9e4;
+    --text-muted: #aeb4c4;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline-width: 3px;
+  }
+
+  .focusable-row,
+  .game-card,
+  .modal-content {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+@media (forced-colors: active) {
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  .game-card.focused,
+  .focusable-row.focused {
+    outline: 2px solid CanvasText;
+    outline-offset: 3px;
+  }
+
+  .library-tab.active,
+  .row-based-menu-section.active {
+    border-color: Highlight;
+    color: HighlightText;
+    background: Highlight;
+  }
 }
