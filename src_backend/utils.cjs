@@ -37,7 +37,8 @@ async function spawnDdcutil(arguments_, options = {}) {
   }
 }
 
-const isDevelopment = process.env.IS_DEV === "1";
+const isDevelopment =
+  process.env.IS_DEV === "1" || process.env.LUTRIS_GAMEPAD_UI_IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
 
 function localeAppFile(name) {

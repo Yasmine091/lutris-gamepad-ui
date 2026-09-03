@@ -7,6 +7,18 @@
     "Open Link": "Öppna länk",
     "Version": "Version"
   },
+  "components/AbstractLutrisSettingsMenu.jsx": {
+    "Browse": "Browse",
+    "Close": "Close",
+    "Default": "Default",
+    "Disable": "Disable",
+    "Edit": "Edit",
+    "Enable": "Enable",
+    "Next Tab": "Next Tab",
+    "Prev Tab": "Prev Tab",
+    "Save": "Save",
+    "Select": "Select"
+  },
   "components/BluetoothMenu.jsx": {
     "Attempting to establish a connection with the device.": "Försöker upprätta en anslutning till enheten.",
     "Bluetooth": "Bluetooth",
@@ -85,6 +97,13 @@
     "Schedule Start": "Schedule Start",
     "Update": "Update"
   },
+  "components/FilePicker.jsx": {
+    "Initial folder unavailable": "Initial folder unavailable",
+    "No directories available.": "No directories available.",
+    "No files available.": "No files available.",
+    "Select Current Directory": "Select Current Directory",
+    "Showing \"{{currentPath}}\" instead of \"{{fallbackFrom}}\".": "Showing \"{{currentPath}}\" instead of \"{{fallbackFrom}}\"."
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Senast spelad: {{date}}",
     "Never": "Aldrig",
@@ -137,6 +156,29 @@
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Laddar..."
+  },
+  "components/LutrisAddGameFlow.jsx": {
+    "Add Game": "Add Game",
+    "Failed to fetch Lutris runners": "Failed to fetch Lutris runners",
+    "Select Runner": "Select Runner"
+  },
+  "components/LutrisAddGameSettingsMenu.jsx": {
+    "Add Game: {{runner}}": "Add Game: {{runner}}",
+    "Added {{name}}": "Added {{name}}",
+    "Failed to add game": "Failed to add game",
+    "Failed to fetch Lutris settings": "Failed to fetch Lutris settings",
+    "Game": "Game",
+    "Game name is required": "Game name is required",
+    "Info": "Info",
+    "Name": "Name",
+    "Optional": "Optional",
+    "Release year": "Release year",
+    "Release year must be a number": "Release year must be a number",
+    "Required": "Required",
+    "Runner": "Runner",
+    "Save": "Save",
+    "Sort name": "Sort name",
+    "System": "System"
   },
   "components/LutrisSettingsFlow.jsx": {
     "Failed to fetch Lutris runners": "Failed to fetch Lutris runners",
@@ -247,5 +289,8 @@
     "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Unmute": "Slå på ljud",
     "Volume": "Volym"
+  },
+  "navigation/row_based_menu/RowBasedMenuContent.jsx": {
+    "No items available.": "No items available."
   }
 }

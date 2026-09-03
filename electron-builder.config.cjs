@@ -30,11 +30,14 @@ module.exports = {
     "lutris_wrapper.sh",
     "lutris_wrapper.py",
     "electron_preload.cjs",
+    "src_backend/resources/gamecontrollerdb.txt",
   ],
   directories: { output: "release" },
   linux: {
     target: "AppImage",
-    category: "game",
+    category: "Game",
+    synopsis:
+      "A simple, TV-friendly, gamepad-navigable frontend for the Lutris game launcher on Linux.",
     icon: "src_frontend/resources/icon.svg",
   },
 };

@@ -1,7 +1,8 @@
+import css from "@eslint/css";
 import js from "@eslint/js";
+import eslintReact from "@eslint-react/eslint-plugin";
 import importX from "eslint-plugin-import-x";
 import promise from "eslint-plugin-promise";
-import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import unicorn from "eslint-plugin-unicorn";
@@ -12,6 +13,23 @@ export default [
   {
     ignores: ["dist/**", "node_modules/**", "release/**", "index.html"],
   },
+
+  {
+    files: ["src_frontend/styles/**/*.css"],
+    language: "css/css",
+    plugins: { css },
+    rules: {
+      ...css.configs.recommended.rules,
+      "css/no-important": "off",
+      "css/no-invalid-properties": "off",
+    },
+  },
+
+  {
+    ...eslintReact.configs.recommended,
+    files: ["src_frontend/**/*.{js,jsx}"],
+  },
+
   {
     // Global settings for all JS/JSX files
     files: ["**/*.{js,jsx,cjs}"],
@@ -24,13 +42,7 @@ export default [
         },
       },
     },
-    settings: {
-      react: {
-        version: "detect",
-      },
-    },
     plugins: {
-      react,
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
       import: importX,
@@ -39,22 +51,26 @@ export default [
     },
     rules: {
       ...js.configs.recommended.rules,
-      ...react.configs.recommended.rules,
-      ...react.configs["jsx-runtime"].rules,
       ...reactHooks.configs.recommended.rules,
       ...promise.configs["flat/recommended"].rules,
       ...unicorn.configs["recommended"].rules,
+
       "unicorn/prevent-abbreviations": "off",
       "unicorn/no-null": "off",
       "unicorn/filename-case": "off",
       "unicorn/no-array-reduce": "error",
       "promise/always-return": "off",
+      "unicorn/prefer-ternary": "off",
+      "unicorn/number-literal-case": "off",
+      "@eslint-react/naming-convention-ref-name": "off",
+      "@eslint-react/no-context-provider": "off",
+      "@eslint-react/no-forward-ref": "off",
+      "@eslint-react/no-use-context": "off",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
       ],
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "react/prop-types": "off",
       "import/order": [
         "warn",
         {
@@ -123,7 +139,7 @@ export default [
     },
   },
   {
-    files: ["src_frontend/contexts/**/*.{js,jsx}"],
+    files: ["src_frontend/stores/**/*.{js,jsx}"],
     rules: {
       "react-refresh/only-export-components": "off",
     },

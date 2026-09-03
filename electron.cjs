@@ -1,9 +1,12 @@
-const { app, Menu } = require("electron");
+const path = require("node:path");
+
+const { app, Menu, protocol } = require("electron");
 
 const { getAppConfig } = require("./src_backend/config_manager.cjs");
 const {
   closeRunningGameProcess,
   toggleGamePause,
+  startFirstAccountSync,
 } = require("./src_backend/game_manager.cjs");
 const { registerIpcHandlers } = require("./src_backend/ipc_handlers.cjs");
 const { getMainWindow } = require("./src_backend/state.cjs");
@@ -15,16 +18,16 @@ const {
 } = require("./src_backend/utils.cjs");
 const { createWindow } = require("./src_backend/window_manager.cjs");
 
-process.noAsar = true;
-
-process.on("unhandledRejection", (reason, promise) => {
-  logError("Caught a global rejection:", reason, promise);
-});
+app.setPath("userData", path.join(app.getPath("cache"), "lutris-gamepad-ui.d"));
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
   return;
 }
+
+process.on("unhandledRejection", (reason, promise) => {
+  logError("Caught a global rejection:", reason, promise);
+});
 
 app.on("second-instance", () => {
   const mainWindow = getMainWindow();
@@ -44,8 +47,19 @@ app.on("window-all-closed", () => {
   app.quit();
 });
 
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "app",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+    },
+  },
+]);
+
 // required flags
-app.commandLine.appendSwitch("enable-features", "GlobalShortcutsPortal");
 app.commandLine.appendSwitch("disable-background-timer-throttling");
 
 // memory usage flags
@@ -54,12 +68,10 @@ app.commandLine.appendSwitch(
   "--optimize_for_size --max_old_space_size=128",
 );
 app.commandLine.appendSwitch("renderer-process-limit", "1");
-app.commandLine.appendSwitch("in-process-gpu");
 
 // unused features flags
 app.commandLine.appendSwitch("disable-site-isolation-trials");
 app.commandLine.appendSwitch("disable-http-cache");
-app.commandLine.appendSwitch("disable-web-bluetooth");
 app.commandLine.appendSwitch("disable-midi");
 app.commandLine.appendSwitch("disable-speech-api");
 app.commandLine.appendSwitch("disable-speech-synthesis-api");
@@ -91,6 +103,9 @@ app
 
     try {
       registerIpcHandlers();
+      if (typeof startFirstAccountSync === "function") {
+        startFirstAccountSync();
+      }
       createWindow(() => {
         logInfo("Main window closed!");
         if (!getAppConfig().keepGamesRunningOnQuit) {

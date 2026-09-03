@@ -106,12 +106,21 @@ function createWindow(onWindowClosedCallback) {
 
   session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
     const requestProtocol = new URL(details.url).protocol;
-    callback({ cancel: !allowedProtocols.has(requestProtocol) });
+    const isInternalFileRequest =
+      requestProtocol === "file:" && details.webContentsId === undefined;
+    callback({
+      cancel: !allowedProtocols.has(requestProtocol) && !isInternalFileRequest,
+    });
   });
 
   protocol.handle("app", (request) => {
     const requestedUrl = new URL(request.url);
-    const requestedPath = path.resolve(path.normalize(requestedUrl.pathname));
+    const urlPath = requestedUrl.hostname
+      ? `/${requestedUrl.hostname}${requestedUrl.pathname}`
+      : requestedUrl.pathname;
+    const requestedPath = path.resolve(
+      path.normalize(decodeURIComponent(urlPath)),
+    );
     const whitelistedFiles = getWhitelistedFiles();
     const mainAppDir = path.join(__dirname, "..");
 
