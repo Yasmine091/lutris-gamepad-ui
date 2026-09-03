@@ -190,10 +190,9 @@
   border-radius: var(--radius-card);
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.7),
-    0 0 0 3px color-mix(in srgb, var(--accent-color) 22%, transparent);
+    0 0 0 2px color-mix(in srgb, var(--accent-color) 28%, transparent);
   border-color: var(--accent-color);
-  outline: 3px solid var(--accent-color);
-  outline-offset: 2px;
+  outline: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

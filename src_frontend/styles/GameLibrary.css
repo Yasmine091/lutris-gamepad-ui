@@ -94,8 +94,10 @@
 .library-tab.active {
   background: var(--accent-soft);
   border-color: var(--accent-color);
-  color: var(--text-primary);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+  color: color-mix(in srgb, var(--accent-color) 82%, white 18%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 0 12px color-mix(in srgb, var(--accent-color) 14%, transparent);
 }
 
 .library-tab:focus-visible {
