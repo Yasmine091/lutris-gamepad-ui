@@ -146,7 +146,7 @@ const SystemMenu = () => {
       },
       {
         label: t("Exit Application"),
-        action: () => api.quitApp(),
+        action: () => window.close(),
         doubleConfirm: true,
         firstConfirm: t("Are you sure you want to exit the application?"),
         secondConfirm: t("Continue with exiting the application?"),

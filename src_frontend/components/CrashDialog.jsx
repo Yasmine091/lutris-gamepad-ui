@@ -3,7 +3,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
-import * as api from "../utils/ipc";
 import { applyReplacements } from "../utils/string";
 
 import DialogLayout from "./DialogLayout";
@@ -34,7 +33,7 @@ const CrashDialog = ({ error, errorInfo }) => {
   }, []);
 
   const handleClose = useCallback(() => {
-    api.quitApp();
+    window.close();
   }, []);
 
   const toggleDetails = useCallback(() => {

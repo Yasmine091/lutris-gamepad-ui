@@ -188,8 +188,10 @@
   transform: scale(1.02);
   z-index: 10;
   border-radius: var(--radius-card);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.7),
+    0 0 0 3px color-mix(in srgb, var(--accent-color) 22%, transparent);
+  border-color: var(--accent-color);
   outline: 3px solid var(--accent-color);
   outline-offset: 2px;
 }

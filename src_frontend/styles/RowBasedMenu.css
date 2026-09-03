@@ -62,6 +62,7 @@
 .row-based-menu-section.active {
   background: var(--accent-soft);
   color: var(--text-primary);
+  border: 1px solid var(--accent-color);
 }
 
 .row-based-menu-empty {

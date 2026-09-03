@@ -70,9 +70,9 @@ const TopBar = () => {
           </>
         )}
         <span className="top-bar-item top-bar-separator">|</span>
-        <span className="top-bar-item top-bar-network">{getNetworkIndicator()}</span>
+        <span className="top-bar-item">{getNetworkIndicator()}</span>
         <span className="top-bar-item top-bar-separator">|</span>
-        <span className="top-bar-item top-bar-version">v{packageJson.version}</span>
+        <span className="top-bar-item">v{packageJson.version}</span>
       </div>
     </div>
   );

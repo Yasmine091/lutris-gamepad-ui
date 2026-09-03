@@ -65,7 +65,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   rebootPC: () => ipcRenderer.send("reboot-pc"),
   powerOffPC: () => ipcRenderer.send("poweroff-pc"),
   openLutris: () => ipcRenderer.send("open-lutris"),
-  quitApp: () => ipcRenderer.send("quit-app"),
   toggleWindowShow: () => ipcRenderer.send("toggle-window-show"),
   openExternalLink: (url) => ipcRenderer.send("open-external-link", url),
   suspendPC: () => ipcRenderer.send("suspend-pc"),

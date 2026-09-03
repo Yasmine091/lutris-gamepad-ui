@@ -225,7 +225,6 @@ const AbstractLutrisSettingsMenu = ({
             isToggledOn={!!item.value}
             labelOn={t("Disable")}
             labelOff={t("Enable")}
-            onClick={() => handleAction("A", item)}
           />
         );
       } else if (
@@ -354,7 +353,7 @@ const AbstractLutrisSettingsMenu = ({
     <DialogLayout
       title={title}
       legendItems={legendItems}
-      className="settings-dialog wide"
+      className="wide"
       scrollable={false}
     >
       {loading ? (

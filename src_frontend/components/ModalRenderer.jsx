@@ -27,41 +27,25 @@ const ModalRenderer = () => {
   useEffect(() => {
     if (!contentReference.current || !isModalOpen) return;
 
-    let frameId = null;
     const observer = new ResizeObserver((entries) => {
-      if (frameId !== null) return;
+      let maxWidth = 0;
+      let maxHeight = 0;
 
-      frameId = requestAnimationFrame(() => {
-        frameId = null;
-        let maxWidth = 0;
-        let maxHeight = 0;
+      for (const entry of entries) {
+        maxWidth = Math.max(entry.target.offsetWidth, maxWidth);
+        maxHeight = Math.max(entry.target.offsetHeight, maxHeight);
+      }
 
-        for (const entry of entries) {
-          maxWidth = Math.max(entry.target.offsetWidth, maxWidth);
-          maxHeight = Math.max(entry.target.offsetHeight, maxHeight);
-        }
-
-        if (maxWidth > 0 || maxHeight > 0) {
-          setMaxSize((previous) => {
-            const nextSize = {
-              width: Math.max(previous.width, maxWidth),
-              height: Math.max(previous.height, maxHeight),
-            };
-
-            return nextSize.width === previous.width &&
-              nextSize.height === previous.height
-              ? previous
-              : nextSize;
-          });
-        }
-      });
+      if (maxWidth > 0 || maxHeight > 0) {
+        setMaxSize((previous) => ({
+          width: Math.max(previous.width, maxWidth),
+          height: Math.max(previous.height, maxHeight),
+        }));
+      }
     });
 
     observer.observe(contentReference.current);
-    return () => {
-      observer.disconnect();
-      if (frameId !== null) cancelAnimationFrame(frameId);
-    };
+    return () => observer.disconnect();
   }, [isModalOpen, topModal]);
 
   if (!isModalOpen) {
